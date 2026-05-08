@@ -3,6 +3,49 @@
 Este repositorio contiene la interfaz de usuario moderna, modular y responsiva para la plataforma de la institución educativa **Educar para Transformar** de Resistencia, Chaco. Desarrollada con **React, TypeScript, Vite y Tailwind CSS v4**, la estructura está optimizada para ser fácilmente escalable por cualquier miembro del equipo técnico.
 
 ---
+📋 Requisitos Previos
+
+Antes de iniciar, asegurate de tener instalado:
+
+Node.js (versión recomendada: 20+)
+npm (incluido con Node.js)
+Un editor de código como:
+VS Code
+Cursor
+Antigravity
+
+Verificá las versiones ejecutando:
+
+node -v
+npm -v
+📂 ¿En qué carpeta se ejecutan los comandos?
+
+Todos los comandos deben ejecutarse dentro de la carpeta raíz del frontend.
+
+Ejemplo:
+
+frontend/
+├── src/
+├── public/
+├── package.json
+├── vite.config.ts
+└── tsconfig.json
+
+La carpeta correcta es la que contiene el archivo:
+
+package.json
+
+2. Ingresar a la carpeta del proyecto
+   
+cd desktop/educarparatransformar/frontend
+
+4. Instalar dependencias
+   
+Este comando descarga React, Vite, Tailwind y todas las librerías necesarias.
+
+npm install
+
+---
 
 ## 🛠️ Filosofía de Desarrollo y Comentarios
 Todo el código fuente ha sido escrito con un enfoque puramente profesional y humano.
