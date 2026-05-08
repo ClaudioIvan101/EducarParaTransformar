@@ -1,0 +1,18 @@
+@import "tailwindcss";
+
+@theme {
+  --color-edu-primary: #1a5276;
+  --color-edu-secondary: #2e86c1;
+  --color-edu-accent: #a9cce3;
+  --color-edu-light: #d6eaf8;
+  --color-edu-dark: #1e293b;
+  --color-edu-card: #f8fafc;
+  
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+@layer base {
+  body {
+    @apply text-edu-dark bg-white font-sans antialiased;
+  }
+}
