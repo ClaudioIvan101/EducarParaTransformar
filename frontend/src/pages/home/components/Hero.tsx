@@ -1,12 +1,12 @@
 import React from 'react';
 import { ArrowRight } from 'lucide-react';
+import imagen_hero_principal from '../../../assets/service/hero-principal.jpg';
 
 export const Hero: React.FC = () => {
   return (
     <section className="relative bg-gradient-to-br from-edu-primary to-edu-secondary text-white py-20 px-4 overflow-hidden">
+      <img src={imagen_hero_principal} alt="" className='absolute inset-0 w-full h-full object-cover opacity-50' />
       {/* Decorative circles to match wireframe visual hints */}
-      <div className="absolute top-[-60px] right-[-40px] w-64 h-64 rounded-full bg-white/5 pointer-events-none" />
-      <div className="absolute bottom-[-20px] left-10 w-40 h-40 rounded-full bg-white/4 pointer-events-none" />
 
       <div className="max-w-4xl mx-auto text-center relative z-10">
         <h1 className="text-3xl md:text-5xl font-bold tracking-tight mb-4 leading-tight">

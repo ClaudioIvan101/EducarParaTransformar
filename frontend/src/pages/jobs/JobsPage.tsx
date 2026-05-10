@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { Upload, FileText, CheckCircle2, AlertCircle, X } from 'lucide-react';
+import imagenHero from '../../assets/service/hero-trabaja-con-nosotros.png';
 
 /**
  * Página de Postulación Laboral "Trabajá con Nosotros".
@@ -119,7 +120,7 @@ export const JobsPage: React.FC = () => {
     <div className="animate-fadeIn">
       {/* Sección Hero: Encabezado descriptivo de la sección */}
       <section className="bg-gradient-to-br from-edu-primary to-edu-secondary text-white py-16 px-4 text-center relative overflow-hidden">
-        <div className="absolute top-[-40px] right-[-30px] w-48 h-48 rounded-full bg-white/5 pointer-events-none" />
+        <img src={imagenHero} alt="" className='absolute inset-0 w-full h-full object-cover opacity-50' />
         <div className="max-w-3xl mx-auto relative z-10">
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-3">Trabajá con nosotros</h1>
           <p className="text-edu-accent text-sm md:text-base max-w-xl mx-auto">

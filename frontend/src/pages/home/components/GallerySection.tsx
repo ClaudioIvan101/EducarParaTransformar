@@ -1,12 +1,16 @@
 import React from 'react';
 import { School, BookOpen, Trophy, Palette } from 'lucide-react';
+import imagenInfraestructura from '../../../assets/service/imagen-infraestructura.png';
+import imagenBiblioteca from '../../../assets/service/imagen-biblioteca.png';
+import imagenDeportes from '../../../assets/service/imagen-deportes.png';
+import imagenTalleres from '../../../assets/service/imagen-talleres.png';
 
 export const GallerySection: React.FC = () => {
   const items = [
-    { icon: <School size={28} className="text-edu-primary" />, label: 'Infraestructura', desc: 'Instalaciones modernas' },
-    { icon: <BookOpen size={28} className="text-edu-primary" />, label: 'Biblioteca', desc: 'Recursos educativos' },
-    { icon: <Trophy size={28} className="text-edu-primary" />, label: 'Deportes', desc: 'Desarrollo físico' },
-    { icon: <Palette size={28} className="text-edu-primary" />, label: 'Talleres', desc: 'Expresión artística' },
+    { icon: <School size={28} className="text-edu-primary" />, label: 'Infraestructura', desc: 'Instalaciones modernas', imgSrc: imagenInfraestructura },
+    { icon: <BookOpen size={28} className="text-edu-primary" />, label: 'Biblioteca', desc: 'Recursos educativos', imgSrc: imagenBiblioteca },
+    { icon: <Trophy size={28} className="text-edu-primary" />, label: 'Deportes', desc: 'Desarrollo físico', imgSrc: imagenDeportes },
+    { icon: <Palette size={28} className="text-edu-primary" />, label: 'Talleres', desc: 'Expresión artística', imgSrc: imagenTalleres },
   ];
 
   return (
@@ -18,13 +22,14 @@ export const GallerySection: React.FC = () => {
         {items.map((item, index) => (
           <div
             key={index}
-            className="flex flex-col items-center justify-center bg-edu-card hover:bg-slate-50 border border-slate-200/60 rounded-lg p-6 text-center transition-all hover:shadow-sm"
+            className="relative overflow-hidden flex flex-col items-center justify-center bg-edu-card hover:bg-slate-50 border border-slate-200/60 rounded-lg p-6 text-center transition-all hover:shadow-sm"
           >
-            <div className="w-12 h-12 rounded-full bg-edu-light/50 flex items-center justify-center mb-3">
+            <img src={item.imgSrc} alt="" className='absolute inset-0 w-full h-full object-cover opacity-20' />
+            <div className="relative z-10 w-12 h-12 rounded-full bg-edu-light/50 flex items-center justify-center mb-3">
               {item.icon}
             </div>
-            <h4 className="text-xs font-semibold text-edu-dark">{item.label}</h4>
-            <p className="text-[10px] text-slate-500 mt-1">{item.desc}</p>
+            <h4 className="relative z-10 text-xs font-semibold text-edu-dark">{item.label}</h4>
+            <p className="relative z-10 text-[10px] text-slate-500 mt-1">{item.desc}</p>
           </div>
         ))}
       </div>

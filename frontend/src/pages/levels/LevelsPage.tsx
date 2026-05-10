@@ -1,6 +1,7 @@
 import React from 'react';
 import { Baby, BookOpen, GraduationCap, Clock, Globe, Laptop, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import imagenHero from '../../assets/service/hero-niveles-educativos.png';
 
 /**
  * Página informativa de la Oferta Académica (Niveles Educativos).
@@ -43,7 +44,7 @@ export const LevelsPage: React.FC = () => {
     <div className="animate-fadeIn">
       {/* Sección Hero: Encabezado contextual */}
       <section className="bg-gradient-to-br from-edu-primary to-edu-secondary text-white py-16 px-4 text-center relative overflow-hidden">
-        <div className="absolute bottom-[-30px] right-[-30px] w-48 h-48 rounded-full bg-white/5 pointer-events-none" />
+        <img src={imagenHero} alt="" className='absolute inset-0 w-full h-full object-cover opacity-50' />
         <div className="max-w-3xl mx-auto relative z-10">
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-3">Niveles Educativos</h1>
           <p className="text-edu-accent text-sm md:text-base max-w-xl mx-auto">

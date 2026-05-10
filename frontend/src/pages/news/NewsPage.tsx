@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Search, Trophy, Palette, BookOpen, ChevronRight } from 'lucide-react';
+import imagenHero from '../../assets/service/hero-noticias.jpg';
 
 // Tipado estricto para cada noticia o novedad institucional
 interface NewsItem {
@@ -78,7 +79,7 @@ export const NewsPage: React.FC = () => {
     <div className="animate-fadeIn">
       {/* Sección Hero: Contenedor con barra de búsqueda integrada en tiempo real */}
       <section className="bg-gradient-to-br from-edu-primary to-edu-secondary text-white py-14 px-4 text-center relative overflow-hidden">
-        <div className="absolute top-[-30px] left-[-30px] w-48 h-48 rounded-full bg-white/5 pointer-events-none" />
+        <img src={imagenHero} alt="" className='absolute inset-0 w-full h-full object-cover opacity-50' />
         <div className="max-w-2xl mx-auto relative z-10 space-y-4">
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight">Noticias y Novedades</h1>
           

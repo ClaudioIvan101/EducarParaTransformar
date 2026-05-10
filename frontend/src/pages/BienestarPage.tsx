@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Brain, Heart, Trophy, BookOpen, ChevronDown, ChevronUp, Mail } from 'lucide-react';
+import imagenHero from '../assets/service/hero-bienestar-estudiantil.jpg';
 
 // Estructura de tipado para las preguntas del acordeón
 interface FAQ {
@@ -64,7 +65,7 @@ export const BienestarPage: React.FC = () => {
     <div className="animate-fadeIn">
       {/* Sección Hero: Encabezado contextual con gradiente corporativo */}
       <section className="bg-gradient-to-br from-edu-primary to-edu-secondary text-white py-16 px-4 text-center relative overflow-hidden">
-        <div className="absolute top-[-30px] right-[-20px] w-52 h-52 rounded-full bg-white/5 pointer-events-none" />
+        <img src={imagenHero} alt="" className='absolute inset-0 w-full h-full object-cover opacity-50' />
         <div className="max-w-3xl mx-auto relative z-10">
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-3">Bienestar Estudiantil</h1>
           <p className="text-edu-accent text-sm md:text-base max-w-xl mx-auto">

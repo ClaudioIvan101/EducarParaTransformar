@@ -1,5 +1,10 @@
 import React from 'react';
 import { Target, Eye, Star, Calendar } from 'lucide-react';
+import imagenHero from '../../assets/service/hero-quienes-somos.png';
+import imagenDirectivo1 from '../../assets/service/directivos/directivos-maria-garcia.jpg';
+import imagenDirectivo2 from '../../assets/service/directivos/directivos-raul-lopez.jpg';
+import imagenDirectivo3 from '../../assets/service/directivos/directivos-ana-perez.jpg';
+import imagenDirectivo4 from '../../assets/service/directivos/directivos-jorge-martin.jpg';
 
 /**
  * Página institucional "Quiénes Somos".
@@ -35,17 +40,17 @@ export const AboutPage: React.FC = () => {
 
   // Listado de autoridades y representantes de la institución
   const team = [
-    { initials: 'MG', name: 'María García', role: 'Directora General' },
-    { initials: 'RL', name: 'Raúl López', role: 'Vicedirector Primaria' },
-    { initials: 'AP', name: 'Ana Pérez', role: 'Vicedirectora Secundaria' },
-    { initials: 'JM', name: 'Jorge Martín', role: 'Representante Legal' },
+    { name: 'María García', role: 'Directora General', urlImg: imagenDirectivo1},
+    { name: 'Raúl López', role: 'Vicedirector Primaria', urlImg: imagenDirectivo2  },
+    { name: 'Ana Pérez', role: 'Vicedirectora Secundaria', urlImg: imagenDirectivo3  },
+    { name: 'Jorge Martín', role: 'Representante Legal', urlImg: imagenDirectivo4  },
   ];
 
   return (
     <div className="animate-fadeIn">
       {/* Sección Hero: Mensaje institucional superior con ondas decorativas traslúcidas */}
       <section className="bg-gradient-to-br from-edu-primary to-edu-secondary text-white py-16 px-4 text-center relative overflow-hidden">
-        <div className="absolute top-[-40px] left-[-30px] w-48 h-48 rounded-full bg-white/5 pointer-events-none" />
+        <img src={imagenHero} alt="" className='absolute inset-0 w-full h-full object-cover opacity-50' />
         <div className="max-w-3xl mx-auto relative z-10">
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-3">Quiénes Somos</h1>
           <p className="text-edu-accent text-sm md:text-base max-w-xl mx-auto">
@@ -106,13 +111,20 @@ export const AboutPage: React.FC = () => {
           {team.map((member, index) => (
             <div
               key={index}
-              className="flex flex-col items-center p-4 bg-edu-card border border-slate-200/60 rounded-lg text-center hover:shadow-sm transition-all"
+              className="relative overflow-hidden flex flex-col rounded-lg border border-slate-200/60 shadow-sm hover:shadow-md transition-all group"
             >
-              <div className="w-14 h-14 rounded-full bg-edu-light text-edu-primary font-bold text-sm flex items-center justify-center mb-3">
-                {member.initials}
+              {/* Imagen que ocupa toda la card */}
+              <img
+                src={member.urlImg}
+                alt={member.name}
+                className="w-full h-48 object-cover object-top transition-transform duration-300 group-hover:scale-105"
+              />
+
+              {/* Nombre y rol con overlay al pie */}
+              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent px-3 py-4">
+                <h4 className="text-xs font-semibold text-white leading-tight">{member.name}</h4>
+                <p className="text-[10px] text-slate-300 mt-0.5">{member.role}</p>
               </div>
-              <h4 className="text-xs font-semibold text-edu-dark">{member.name}</h4>
-              <p className="text-[10px] text-slate-500 mt-1">{member.role}</p>
             </div>
           ))}
         </div>
