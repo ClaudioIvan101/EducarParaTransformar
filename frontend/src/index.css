@@ -7,12 +7,13 @@
   --color-edu-light: #d6eaf8;
   --color-edu-dark: #1e293b;
   --color-edu-card: #f8fafc;
+  --color-edu-bg: #fafaf9;
   
   --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
 @layer base {
   body {
-    @apply text-edu-dark bg-white font-sans antialiased;
+    @apply text-edu-dark bg-edu-bg font-sans antialiased;
   }
 }
