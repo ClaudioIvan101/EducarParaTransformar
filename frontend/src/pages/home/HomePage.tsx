@@ -1,17 +1,44 @@
 import React from 'react';
 import { Hero } from './components/Hero';
+import { IntroSection } from './components/IntroSection';
 import { GallerySection } from './components/GallerySection';
+import { FluidStackSection } from './components/FluidStackSection';
+import { CommunitySection } from './components/CommunitySection';
 import { ContactSection } from './components/ContactSection';
 import { TestimonialsSection } from './components/TestimonialsSection';
 import { MessageCircle } from 'lucide-react';
+import { FadeInSection } from '../../shared/components/FadeInSection';
 
 export const HomePage: React.FC = () => {
   return (
     <div className="relative">
-      <Hero />
-      <GallerySection />
-      <ContactSection />
-      <TestimonialsSection />
+      <FadeInSection direction="none" duration={0.8}>
+        <Hero />
+      </FadeInSection>
+      
+      <FadeInSection direction="up" delay={0.2}>
+        <IntroSection />
+      </FadeInSection>
+      
+      <FadeInSection direction="up">
+        <GallerySection />
+      </FadeInSection>
+
+      <FadeInSection direction="up">
+        <FluidStackSection />
+      </FadeInSection>
+
+      <FadeInSection direction="up">
+        <CommunitySection />
+      </FadeInSection>
+      
+      <FadeInSection direction="up">
+        <ContactSection />
+      </FadeInSection>
+      
+      <FadeInSection direction="up">
+        <TestimonialsSection />
+      </FadeInSection>
 
       {/* Floating Action Button (FAB) for WhatsApp/Chat from the wireframe */}
       <a
