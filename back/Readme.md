@@ -1,3 +1,15 @@
+# Project Name
+
+<p align="center">
+  <img src="./docs/mer.png" alt="MER Diagram" width="700"/>
+</p>
+
+<p align="center">
+  <i>Entity Relationship Model (MER)</i>
+</p>
+
+---
+
 # Project Configuration
 
 ## 1. Clone the Repository
