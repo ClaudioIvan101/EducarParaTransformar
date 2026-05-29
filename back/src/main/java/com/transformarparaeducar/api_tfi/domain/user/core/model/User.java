@@ -32,13 +32,16 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     @Column(name="roles", nullable = false)
+    @ElementCollection
+    @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
     private Set<UserRole> roles;
 
-    public User(EmailAddress emailAddress, String firstName, String lastName, String password) {
+    public User(EmailAddress emailAddress, String firstName, String lastName, String password, Set<UserRole> roles) {
         this.emailAddress = emailAddress;
         this.firstName = firstName;
         this.lastName = lastName;
         this.password = password;
+        this.roles = roles;
     }
 
     public Long getIdentifierAsLong(){

@@ -34,28 +34,7 @@ public class SecurityConfig {
     @Bean
     public AuthenticationManager authenticationManager(
             AuthenticationConfiguration config) throws Exception {
-        return config.getAuthenticationManager();  // ← Spring lo provee así
-    }
-
-    @Bean
-    public SecurityFilterChain filterChain(
-            HttpSecurity http,
-            AuthenticationManager authManager) throws Exception {  // ← lo recibís como parámetro
-
-        return http
-                .csrf(csrf -> csrf.disable())
-                .sessionManagement(s -> s
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/users").permitAll()
-                        .anyRequest().authenticated()
-                )
-                .addFilter(new JwtLoginFilter(authManager, jwtService))
-                .addFilterBefore(
-                        new JwtAuthenticationFilter(jwtService),
-                        UsernamePasswordAuthenticationFilter.class)
-                .build();
+        return config.getAuthenticationManager();
     }
 
     @Bean
@@ -63,5 +42,26 @@ public class SecurityConfig {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider(userDetailsService);
         provider.setPasswordEncoder(passwordEncoder());
         return provider;
+    }
+
+    @Bean
+    public SecurityFilterChain filterChain(
+            HttpSecurity http,
+            AuthenticationManager authManager) throws Exception {
+        return http
+                .csrf(csrf -> csrf.disable())
+                .sessionManagement(s -> s
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authenticationProvider(authenticationProvider())
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/users").permitAll()
+                        .anyRequest().authenticated()
+                )
+                .addFilter(new JwtLoginFilter(authManager, jwtService))
+                .addFilterBefore(
+                        new JwtAuthenticationFilter(jwtService),
+                        UsernamePasswordAuthenticationFilter.class)
+                .build();
     }
 }

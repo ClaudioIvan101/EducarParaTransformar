@@ -8,21 +8,16 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Embeddable
-@EqualsAndHashCode
 public class EmailAddress {
 
-    @Column(name="email")
+    @Column(name = "email", nullable = false, unique = true)
     private String value;
 
     public EmailAddress(String value) {
-        Pattern pattern = Pattern.compile("^(.+)@(.+)$");
-        Matcher matcher = pattern.matcher(value);
-        if(matcher.matches()){
-            this.value = value;
-        } else {
-            throw new IllegalArgumentException("El valor no es un email válido");
-        }
+        this.value = value;
     }
 
-    private EmailAddress(){}
+    public String value() { return value; }
+
+    protected EmailAddress() {}
 }

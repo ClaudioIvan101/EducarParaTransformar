@@ -7,6 +7,7 @@ import com.transformarparaeducar.api_tfi.domain.user.core.ports.outgoing.UserDat
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.sql.SQLException;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -17,36 +18,23 @@ public class UserDatabaseAdapter implements UserDatabase {
 
     @Override
     public UserIdentifier save(User user) {
-        User savedUser = userRepository.save(user);
-        return new UserIdentifier(savedUser.getIdentifierAsLong());
+        User saved = userRepository.save(user);
+        return new UserIdentifier(saved.getId());
     }
 
     @Override
-    public GetUserDTO findById(UserIdentifier userId) {
-        GetUserDTO getUserDTO = userRepository.findById(userId.getAsLong())
+    public GetUserDTO findById(UserIdentifier id) {
+        return userRepository.findById(id.getAsLong())
                 .map(user -> new GetUserDTO(
-                        user.getEmailAddress().toString(),
+                        user.getEmailAddress().value(),
                         user.getFirstName(),
                         user.getLastName()
                 ))
                 .orElse(null);
-        return getUserDTO;
     }
 
     @Override
-    public GetUserDTO findByEmail(String email) {
-        return userRepository.findByEmailAddress(email)
-                    .map(user -> new GetUserDTO(
-                            user.getEmailAddress().toString(),
-                            user.getFirstName(),
-                            user.getLastName()
-                    ))
-                    .orElse(null);
-    }
-
-    @Override
-    public Optional<User> findUserByEmail(String email) {
-
-        return userRepository.findByEmailAddress(email);
+    public Optional<User> findByEmailAddress(String email) {
+        return userRepository.findByEmailAddress(email);  // ← nombre actualizado
     }
 }

@@ -19,6 +19,7 @@ public class JwtLoginFilter extends UsernamePasswordAuthenticationFilter {
     public JwtLoginFilter(AuthenticationManager authManager, JwtService jwtService) {
         super(authManager);
         this.jwtService = jwtService;
+        setFilterProcessesUrl("/auth/login");
     }
 
     // Lee el JSON del body
@@ -27,6 +28,8 @@ public class JwtLoginFilter extends UsernamePasswordAuthenticationFilter {
             HttpServletRequest request,
             HttpServletResponse response) {
 
+        System.out.println(">>> attemptAuthentication llamado");
+
         LoginRequest credentials = null;
         try {
             credentials = new ObjectMapper()
@@ -34,6 +37,10 @@ public class JwtLoginFilter extends UsernamePasswordAuthenticationFilter {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
+        System.out.println(">>> email: " + credentials.getEmail());
+        System.out.println(">>> password: " + credentials.getPassword());
+
 
         return getAuthenticationManager().authenticate(
                 new UsernamePasswordAuthenticationToken(

@@ -9,23 +9,30 @@ import com.transformarparaeducar.api_tfi.domain.user.core.ports.incoming.UpdateU
 import com.transformarparaeducar.api_tfi.domain.user.core.ports.outgoing.UserDatabase;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.sql.SQLException;
+import java.util.stream.Collectors;
+
 
 public class UserFacade implements AddNewUser, GetUser, UpdateUser {
 
     private final UserDatabase database;
-    private PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserFacade(UserDatabase database) {
+    public UserFacade(UserDatabase database, PasswordEncoder passwordEncoder) {
         this.database = database;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
-    public UserIdentifier handle(AddUserDTO addUserDTO) {
+    public UserIdentifier handle(AddUserDTO addUserDTO) throws SQLException {
         User user = new User(
                 new EmailAddress(addUserDTO.getEmail()),
                 addUserDTO.getFirstName(),
                 addUserDTO.getLastName(),
-                passwordEncoder.encode(addUserDTO.getPassword())
+                passwordEncoder.encode(addUserDTO.getPassword()),
+                addUserDTO.getRoles().stream()
+                        .map(UserRole::valueOf)
+                        .collect(Collectors.toSet())
         );
         return database.save(user);
     }
@@ -37,7 +44,7 @@ public class UserFacade implements AddNewUser, GetUser, UpdateUser {
     }
 
     @Override
-    public void handle(Long userId, String firstName, String lastName) {
+    public void handle(Long userId, String firstName, String lastName) throws SQLException {
         UserIdentifier userIdentifier = new UserIdentifier(userId);
         GetUserDTO userDTO = database.findById(userIdentifier);
         if (userDTO != null) {
@@ -45,6 +52,7 @@ public class UserFacade implements AddNewUser, GetUser, UpdateUser {
                     new EmailAddress(userDTO.getEmail()),
                     firstName,
                     lastName,
+                    null,
                     null
             );
             database.save(user);
