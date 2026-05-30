@@ -7,6 +7,7 @@ import { BienestarPage } from './pages/BienestarPage';
 import { NewsPage } from './pages/news/NewsPage';
 import { JobsPage } from './pages/jobs/JobsPage';
 import { LoginPage } from './pages/login/LoginPage';
+import { ScrollToTop } from './shared/components/ScrollToTop';
 
 /**
  * Componente principal de la aplicación.
@@ -16,6 +17,9 @@ import { LoginPage } from './pages/login/LoginPage';
 function App() {
   return (
     <Router>
+      {/* Resetea el scroll a la parte superior en cada cambio de ruta */}
+      <ScrollToTop />
+
       <MainLayout>
         <Routes>
           {/* Ruta raíz: Pantalla de inicio */}
@@ -47,3 +51,4 @@ function App() {
 }
 
 export default App;
+
