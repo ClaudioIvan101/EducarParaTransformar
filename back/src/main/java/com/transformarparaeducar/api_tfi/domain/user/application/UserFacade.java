@@ -1,4 +1,4 @@
-package com.transformarparaeducar.api_tfi.domain.user.core;
+package com.transformarparaeducar.api_tfi.domain.user.application;
 
 import com.transformarparaeducar.api_tfi.domain.user.application.dto.AddUserDTO;
 import com.transformarparaeducar.api_tfi.domain.user.application.dto.GetUserDTO;
@@ -24,7 +24,7 @@ public class UserFacade implements AddNewUser, GetUser, UpdateUser {
     }
 
     @Override
-    public UserIdentifier handle(AddUserDTO addUserDTO) throws SQLException {
+    public UserIdentifier handle(AddUserDTO addUserDTO){
         User user = new User(
                 new EmailAddress(addUserDTO.getEmail()),
                 addUserDTO.getFirstName(),
@@ -44,7 +44,7 @@ public class UserFacade implements AddNewUser, GetUser, UpdateUser {
     }
 
     @Override
-    public void handle(Long userId, String firstName, String lastName) throws SQLException {
+    public void handle(Long userId, String firstName, String lastName){
         UserIdentifier userIdentifier = new UserIdentifier(userId);
         GetUserDTO userDTO = database.findById(userIdentifier);
         if (userDTO != null) {

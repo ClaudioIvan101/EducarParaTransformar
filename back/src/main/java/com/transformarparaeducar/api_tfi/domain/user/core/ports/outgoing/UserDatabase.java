@@ -8,7 +8,7 @@ import java.sql.SQLException;
 import java.util.Optional;
 
 public interface UserDatabase {
-    UserIdentifier save(User user) throws SQLException;
+    UserIdentifier save(User user);
 
     GetUserDTO findById(UserIdentifier userId);
 

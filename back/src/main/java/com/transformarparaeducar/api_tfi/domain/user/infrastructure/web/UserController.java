@@ -1,4 +1,4 @@
-package com.transformarparaeducar.api_tfi.domain.user.application;
+package com.transformarparaeducar.api_tfi.domain.user.infrastructure.web;
 
 import com.transformarparaeducar.api_tfi.domain.user.application.dto.AddUserDTO;
 import com.transformarparaeducar.api_tfi.domain.user.application.dto.GetUserDTO;
@@ -14,7 +14,7 @@ import java.sql.SQLException;
 @RestController
 @RequestMapping("/users")
 @RequiredArgsConstructor
-public class UserCommandController {
+public class UserController {
 
     private final AddNewUser addNewUser;
     private final GetUser getUser;
