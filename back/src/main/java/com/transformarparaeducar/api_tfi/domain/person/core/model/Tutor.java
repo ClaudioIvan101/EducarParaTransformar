@@ -1,6 +1,7 @@
 package com.transformarparaeducar.api_tfi.domain.person.core.model;
 
 import com.transformarparaeducar.api_tfi.domain.user.core.model.User;
+import com.transformarparaeducar.api_tfi.domain.user.core.model.UserRole;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
@@ -8,6 +9,7 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import org.hibernate.type.YesNoConverter;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -24,16 +26,16 @@ public class Tutor extends Person{
     private Boolean livesWithStudent;
 
     public Tutor(String firstName, String lastName, String email,
-                   Long dni, Date birthDate, List<String> phoneNumbers,
-                   User user) {
-        super(null, firstName, lastName, email, dni, birthDate, phoneNumbers, user);
+                   Long dni, LocalDate birthDate, List<String> phoneNumbers) {
+        super(firstName, lastName, email, dni, birthDate, phoneNumbers);
     }
 
     public Tutor() {}
 
-    public Tutor(String firstName, String lastName, String email,
-                   Long dni, Date birthDate, List<String> phoneNumbers,
-                   User user, Date hireDate, String fileNumber) {
-        super(null, firstName, lastName, email, dni, birthDate, phoneNumbers, user);
+    public Tutor(String firstName, String lastName, String email, Long dni, LocalDate birthDate,
+                 List<String> phoneNumbers, String relationshipWithStudent, Boolean livesWithStudent) {
+        super(firstName, lastName, email, dni, birthDate, phoneNumbers);
+        this.relationshipWithStudent = relationshipWithStudent;
+        this.livesWithStudent = livesWithStudent;
     }
 }

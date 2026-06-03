@@ -1,22 +1,22 @@
-package com.transformarparaeducar.api_tfi.domain.person.core.application.dto.student;
+package com.transformarparaeducar.api_tfi.domain.person.application.dto.student;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
 import java.util.Set;
 
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class GetStudent {
-    private Long id;
+public class GetStudentDTO {
     private String firstName;
     private String lastName;
     private String email;
-    private Long dni;
+    private String dni;
     private String birthDate; // Formato: "yyyy-MM-dd"
-    private Set<String> phoneNumbers;
+    private List<String> phoneNumbers;
 }
