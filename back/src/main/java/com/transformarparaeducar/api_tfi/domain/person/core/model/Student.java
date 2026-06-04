@@ -1,13 +1,10 @@
 package com.transformarparaeducar.api_tfi.domain.person.core.model;
 
-import com.transformarparaeducar.api_tfi.domain.user.core.model.User;
-import com.transformarparaeducar.api_tfi.domain.user.core.model.UserRole;
+
 import jakarta.persistence.*;
 import lombok.Getter;
 
 import java.time.LocalDate;
-import java.util.Date;
-import java.util.List;
 
 @Entity
 @Getter
@@ -33,24 +30,19 @@ public class Student extends Person {
     public Student() {}
 
     public Student(String firstName, String lastName, String email,
-                   Long dni, LocalDate birthDate, List<String> phoneNumbers) {
-        super(firstName, lastName, email, dni, birthDate, phoneNumbers);
+                   Long dni, LocalDate birthDate) {
+        super(firstName, lastName, email, dni, birthDate);
     }
 
     public Student(String firstName, String lastName, String email,
-                   Long dni, LocalDate birthDate, List<String> phoneNumbers,
-                   String schoolYear, String division) {
-        super(firstName, lastName, email, dni, birthDate, phoneNumbers);
-        this.fileNumber = generateFileNumber();
-        this.yearOfEnrollment = java.time.Year.now().getValue();
+                   Long dni, LocalDate birthDate,
+                   String schoolYear, String division, EducationalLevel educationalLevel,
+                   String fileNumber) {
+        super(firstName, lastName, email, dni, birthDate);
+        this.yearOfEnrollment = LocalDate.now().getYear();
         this.schoolYear = schoolYear;
         this.division = division;
-    }
-
-    private String generateFileNumber() {
-        // Genera un legajo único basado en el DNI y el año de ingreso
-        String dniPart = String.valueOf(getDni()).substring(0, 6); // Últimos 6 dígitos del DNI
-        String yearPart = String.valueOf(yearOfEnrollment);
-        return "EST-" + dniPart + "-" + yearPart;
+        this.educationalLevel = educationalLevel;
+        this.fileNumber = fileNumber; // Se asignará automáticamente al guardar
     }
 }

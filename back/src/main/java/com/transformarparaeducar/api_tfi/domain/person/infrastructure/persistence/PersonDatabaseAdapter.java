@@ -4,6 +4,8 @@ import com.transformarparaeducar.api_tfi.domain.person.application.dto.student.G
 import com.transformarparaeducar.api_tfi.domain.person.core.model.Person;
 import com.transformarparaeducar.api_tfi.domain.person.core.model.PersonIdentifier;
 import com.transformarparaeducar.api_tfi.domain.person.core.ports.outgoing.PersonDatabase;
+import com.transformarparaeducar.api_tfi.domain.user.core.model.User;
+import com.transformarparaeducar.api_tfi.domain.user.core.model.UserIdentifier;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -13,10 +15,12 @@ import java.util.Optional;
 @Service
 public class PersonDatabaseAdapter implements PersonDatabase {
 
+    private final PersonRepository personRepository;
 
     @Override
     public PersonIdentifier save(Person person) {
-        return null;
+        Person saved = personRepository.save(person);
+        return new PersonIdentifier(saved.getId());
     }
 
     @Override

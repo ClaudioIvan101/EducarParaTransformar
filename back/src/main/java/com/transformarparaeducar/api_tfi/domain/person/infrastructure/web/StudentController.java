@@ -7,6 +7,7 @@ import com.transformarparaeducar.api_tfi.domain.person.core.ports.incoming.GetSt
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -18,6 +19,7 @@ public class StudentController {
     private final GetStudent getStudent;
 
     @PostMapping("")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
     public ResponseEntity<String> addNewStudent(@RequestBody AddStudentDTO addStudentDTO){
         addNewStudent.handle(addStudentDTO);
         return new ResponseEntity<>("Nueva persona creada", HttpStatus.CREATED);

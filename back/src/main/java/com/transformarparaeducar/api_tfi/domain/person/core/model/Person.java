@@ -46,13 +46,11 @@ public abstract class Person {
     @JoinColumn(name = "usuario_id")
     private User user;
 
-    public Person(String firstName, String lastName, String email, Long dni, LocalDate birthDate,
-                  List<String> phoneNumbers) {
+    public Person(String firstName, String lastName, String email, Long dni, LocalDate birthDate) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.dni = dni;
         this.birthDate = birthDate;
-        this.phoneNumbers = phoneNumbers;
     }
 }

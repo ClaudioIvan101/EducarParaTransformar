@@ -26,15 +26,15 @@ public class Tutor extends Person{
     private Boolean livesWithStudent;
 
     public Tutor(String firstName, String lastName, String email,
-                   Long dni, LocalDate birthDate, List<String> phoneNumbers) {
-        super(firstName, lastName, email, dni, birthDate, phoneNumbers);
+                   Long dni, LocalDate birthDate) {
+        super(firstName, lastName, email, dni, birthDate);
     }
 
     public Tutor() {}
 
     public Tutor(String firstName, String lastName, String email, Long dni, LocalDate birthDate,
-                 List<String> phoneNumbers, String relationshipWithStudent, Boolean livesWithStudent) {
-        super(firstName, lastName, email, dni, birthDate, phoneNumbers);
+                 String relationshipWithStudent, Boolean livesWithStudent) {
+        super(firstName, lastName, email, dni, birthDate);
         this.relationshipWithStudent = relationshipWithStudent;
         this.livesWithStudent = livesWithStudent;
     }
