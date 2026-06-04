@@ -1,5 +1,5 @@
 import React from 'react';
-import { Target, Eye, Star, Calendar, Award, Users, BookOpen, GraduationCap, School, Building, Laptop, ArrowRight } from 'lucide-react';
+import { Target, Eye, Star, Calendar, Award, Users, BookOpen, GraduationCap, Building, Laptop, ArrowRight } from 'lucide-react';
 import { FadeInSection } from '../../shared/components/FadeInSection';
 import imagenDirectivo1 from '../../assets/service/directivos/directivos-maria-garcia.jpg';
 import imagenDirectivo2 from '../../assets/service/directivos/directivos-raul-lopez.jpg';

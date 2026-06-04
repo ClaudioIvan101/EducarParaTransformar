@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { LogIn, Users, GraduationCap, CheckCircle2, ShieldAlert } from 'lucide-react';
 
 /**
@@ -7,6 +8,7 @@ import { LogIn, Users, GraduationCap, CheckCircle2, ShieldAlert } from 'lucide-r
  * Cuenta con estados de validación de entradas y simulación activa de petición de inicio de sesión.
  */
 export const LoginPage: React.FC = () => {
+  const navigate = useNavigate();
   // Estados para almacenar el tipo de perfil, credenciales e indicadores de red simulada
   const [userType, setUserType] = useState<'family' | 'staff'>('family');
   const [username, setUsername] = useState('');
@@ -29,6 +31,16 @@ export const LoginPage: React.FC = () => {
     setTimeout(() => {
       setIsSubmitting(false);
       setIsSuccess(true);
+      localStorage.setItem('educar_user_role', userType);
+      
+      // Esperar brevemente para mostrar el mensaje de éxito antes de redirigir
+      setTimeout(() => {
+        if (userType === 'staff') {
+          navigate('/privado/noticias');
+        } else {
+          navigate('/privado/foro');
+        }
+      }, 1000);
     }, 1500);
   };
 
@@ -37,6 +49,7 @@ export const LoginPage: React.FC = () => {
     setUsername('');
     setPassword('');
     setIsSuccess(false);
+    localStorage.removeItem('educar_user_role');
   };
 
   return (
