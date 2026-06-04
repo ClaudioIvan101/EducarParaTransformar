@@ -21,4 +21,5 @@ public class AddStudentDTO {
     private String password;
     private String schoolYear;
     private String division;
+    private String educationalLevel;
 }
