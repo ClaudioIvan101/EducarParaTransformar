@@ -21,12 +21,11 @@ const ScrollReveal: React.FC<{ children: React.ReactNode; delay?: string }> = ({
       ([entry]) => {
         if (entry.isIntersecting) {
           setIsIntersecting(true);
-          // Una vez que se despliega, dejamos de observar para mejorar rendimiento
           if (ref.current) observer.unobserve(ref.current);
         }
       },
       { 
-        rootMargin: '-60px 0px -60px 0px', // Activa el efecto un poquito antes de que aparezca
+        rootMargin: '-60px 0px -60px 0px', 
         threshold: 0.05 
       }
     );
@@ -151,7 +150,7 @@ export const BienestarPage: React.FC = () => {
           </div>
         </section>
 
-        {/* Sección: Compromiso (Efecto de despliegue) */}
+        {/* Sección: Compromiso */}
         <section className="py-16 bg-slate-50 border-b border-slate-100">
           <ScrollReveal delay="duration-500">
             <div className="max-w-3xl mx-auto px-4 text-center relative">
@@ -167,7 +166,7 @@ export const BienestarPage: React.FC = () => {
           </ScrollReveal>
         </section>
 
-        {/* SECCIÓN: CRECIMIENTO INTEGRAL (Efecto de despliegue) */}
+        {/* SECCIÓN: CRECIMIENTO INTEGRAL */}
         <section className="py-20 max-w-5xl mx-auto px-4">
           <ScrollReveal>
             <div className="text-center max-w-2xl mx-auto mb-12">
@@ -217,7 +216,7 @@ export const BienestarPage: React.FC = () => {
           </ScrollReveal>
         </section>
 
-        {/* ÁREAS DE APOYO ESCOLAR (Efecto de despliegue) */}
+        {/* ÁREAS DE APOYO ESCOLAR */}
         <section className="py-20 bg-slate-50/60 border-t border-b border-slate-200/50">
           <div className="max-w-6xl mx-auto px-4">
             <ScrollReveal>
@@ -251,7 +250,7 @@ export const BienestarPage: React.FC = () => {
           </div>
         </section>
 
-        {/* NUESTROS SERVICIOS (Efecto de despliegue) */}
+        {/* NUESTROS SERVICIOS */}
         <section className="py-20 bg-white">
           <div className="max-w-6xl mx-auto px-4">
             <ScrollReveal>
@@ -285,7 +284,7 @@ export const BienestarPage: React.FC = () => {
           </div>
         </section>
 
-        {/* FRASE INSTITUCIONAL DESTACADA (Efecto de despliegue) */}
+        {/* FRASE INSTITUCIONAL DESTACADA */}
         <section className="relative py-24 bg-slate-950 text-white overflow-hidden shadow-2xl">
           <img src={imagenHero} alt="" className="absolute inset-0 w-full h-full object-cover opacity-10 mix-blend-overlay scale-110 blur-[1px]" />
           <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-950/90 to-slate-900/60" />
@@ -300,7 +299,7 @@ export const BienestarPage: React.FC = () => {
           </div>
         </section>
 
-        {/* SECCIÓN FAQ (Efecto de despliegue) */}
+        {/* SECCIÓN FAQ */}
         <section className="py-20 max-w-4xl mx-auto px-4 bg-white">
           <ScrollReveal>
             <div className="text-center mb-12">
