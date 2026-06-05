@@ -1,0 +1,126 @@
+{
+  "info": {
+    "_postman_id": "949f2925-c6db-489c-b7a2-dbd25c02c40a",
+    "name": "Estudiantes",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "21355328"
+  },
+  "item": [
+    {
+      "name": "Crear estudiante",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{api-key}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"firstName\":\"Juan\",\r\n    \"lastName\":\"Perez\",\r\n    \"email\":\"jperez@mozilla.org\",\r\n    \"dni\":\"2225667\",\r\n    \"birthDate\":\"12/07/2005\",\r\n    \"schoolYear\":\"2008\",\r\n    \"division\":\"B\",\r\n    \"educationalLevel\":\"primaria\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/students",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "students"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Crear estudiantes por csv",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{api-key}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "file",
+              "type": "file",
+              "uuid": "c0558cea-8dd0-4e56-b51d-e38085e81164",
+              "src": "/C:/Users/BANGHO/Desktop/UTN-Programacion/Metodologia de Sistemas I/repositorio-git/prueba-estudiantes.csv"
+            }
+          ]
+        },
+        "url": {
+          "raw": "http://localhost:8080/students/addStudentsByFile",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "students",
+            "addStudentsByFile"
+          ],
+          "query": [
+            {
+              "key": "",
+              "value": null,
+              "disabled": true
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get Estudiante",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{api-key}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/students/2",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "students",
+            "2"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}

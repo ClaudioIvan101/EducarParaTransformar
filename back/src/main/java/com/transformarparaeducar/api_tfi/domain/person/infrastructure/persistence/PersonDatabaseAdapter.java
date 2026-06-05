@@ -4,6 +4,8 @@ import com.transformarparaeducar.api_tfi.domain.person.application.dto.student.G
 import com.transformarparaeducar.api_tfi.domain.person.core.model.Person;
 import com.transformarparaeducar.api_tfi.domain.person.core.model.PersonIdentifier;
 import com.transformarparaeducar.api_tfi.domain.person.core.ports.outgoing.PersonDatabase;
+import com.transformarparaeducar.api_tfi.domain.user.core.model.User;
+import com.transformarparaeducar.api_tfi.domain.user.core.model.UserIdentifier;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -13,19 +15,31 @@ import java.util.Optional;
 @Service
 public class PersonDatabaseAdapter implements PersonDatabase {
 
+    private final PersonRepository personRepository;
 
     @Override
     public PersonIdentifier save(Person person) {
-        return null;
+        Person saved = personRepository.save(person);
+        return new PersonIdentifier(saved.getId());
     }
 
     @Override
-    public GetStudentDTO findById(PersonIdentifier personId) {
-        return null;
+    public Optional<Person> findById(Long personId) {
+        return personRepository.findById(personId);
     }
 
     @Override
     public Optional<Person> findByEmailAddress(String email) {
         return Optional.empty();
+    }
+
+    @Override
+    public Optional<Person> findByDni(Long dni) {
+        return personRepository.findByDni(dni);
+    }
+
+    @Override
+    public void saveAndFlush(Person person) {
+        personRepository.saveAndFlush(person);
     }
 }

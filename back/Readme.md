@@ -199,6 +199,16 @@ java -jar target/<nombre-del-proyecto>.jar
 
 ---
 
+## Colección de Postman
+
+Importá la colección para probar los endpoints:
+
+1. Abrí Postman
+2. File → Import
+3. Seleccioná el/los archivos dentro de  `docs/postman_collections/`
+
+---
+
 # Notas Adicionales
 
 - Nunca commitees `application.properties` con credenciales reales — usá variables de entorno.

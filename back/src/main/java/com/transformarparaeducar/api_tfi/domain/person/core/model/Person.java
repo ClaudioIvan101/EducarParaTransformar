@@ -5,6 +5,7 @@ import com.transformarparaeducar.api_tfi.domain.user.core.model.UserRole;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDate;
 import java.util.Date;
@@ -15,6 +16,7 @@ import java.util.List;
 @Table(name = "persona")
 @NoArgsConstructor  // JPA lo necesita en la clase raíz también
 @Getter
+@Setter
 public abstract class Person {
 
     @Id
@@ -46,13 +48,11 @@ public abstract class Person {
     @JoinColumn(name = "usuario_id")
     private User user;
 
-    public Person(String firstName, String lastName, String email, Long dni, LocalDate birthDate,
-                  List<String> phoneNumbers) {
+    public Person(String firstName, String lastName, String email, Long dni, LocalDate birthDate) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.dni = dni;
         this.birthDate = birthDate;
-        this.phoneNumbers = phoneNumbers;
     }
 }

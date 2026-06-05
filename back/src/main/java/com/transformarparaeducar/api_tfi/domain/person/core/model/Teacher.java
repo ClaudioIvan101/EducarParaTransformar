@@ -27,13 +27,13 @@ public class Teacher extends Person {
     public Teacher() {}
 
     public Teacher(String firstName, String lastName, String email,
-                   Long dni, LocalDate birthDate, List<String> phoneNumbers) {
-        super(firstName, lastName, email, dni, birthDate, phoneNumbers);
+                   Long dni, LocalDate birthDate) {
+        super(firstName, lastName, email, dni, birthDate);
     }
 
     public Teacher(String firstName, String lastName, String email,
-                   Long dni, LocalDate birthDate, List<String> phoneNumbers, LocalDate hireDate) {
-        super(firstName, lastName, email, dni, birthDate, phoneNumbers);
+                   Long dni, LocalDate birthDate, LocalDate hireDate) {
+        super(firstName, lastName, email, dni, birthDate);
         this.hireDate = hireDate;
         this.fileNumber = generateFileNumber();
     }
