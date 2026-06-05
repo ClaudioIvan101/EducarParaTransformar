@@ -13,4 +13,6 @@ public interface UserDatabase {
     GetUserDTO findById(UserIdentifier userId);
 
     Optional<User> findByEmailAddress(String email);
+
+    Optional<User> findUserById(UserIdentifier userId);
 }

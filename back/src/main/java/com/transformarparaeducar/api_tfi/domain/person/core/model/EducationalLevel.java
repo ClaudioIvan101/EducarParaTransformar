@@ -6,7 +6,7 @@ import java.util.Arrays;
 
 @Getter
 public enum EducationalLevel {
-    KINDERGARTEN("Jardín de Infantes"),
+    KINDERGARTEN("Jardin de Infantes"),
     PRIMARY("Primaria"),
     SECONDARY("Secundaria");
 

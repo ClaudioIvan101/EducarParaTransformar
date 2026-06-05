@@ -55,6 +55,7 @@ public class SecurityConfig {
                 .authenticationProvider(authenticationProvider())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/users/student").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilter(new JwtLoginFilter(authManager, jwtService))

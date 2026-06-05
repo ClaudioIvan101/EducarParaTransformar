@@ -41,13 +41,13 @@ public class User {
     private UserRequestStatus userRequestStatus;
 
     public User(EmailAddress emailAddress, String firstName, String lastName, String password,
-                Set<UserRole> roles) {
+                Set<UserRole> roles, UserRequestStatus userRequestStatus) {
         this.emailAddress = emailAddress;
         this.firstName = firstName;
         this.lastName = lastName;
         this.password = password;
         this.roles = roles;
-        this.userRequestStatus = UserRequestStatus.PENDING;
+        this.userRequestStatus = userRequestStatus;
     }
 
     public Long getIdentifierAsLong(){
