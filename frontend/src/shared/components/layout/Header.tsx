@@ -73,8 +73,12 @@ export const Header: React.FC = () => {
   return (
     <header className="sticky top-0 z-50 bg-edu-primary text-white shadow-md">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
-        <Link to="/" className="flex items-center gap-2 transition-opacity hover:opacity-90">
-          <span className="text-2xl">🎓</span>
+        <Link to="/" className="flex items-center gap-3 transition-opacity hover:opacity-90">
+          <img
+            src="/logo/logo%20(6).png"
+            alt="Logo Educar para Transformar"
+            className="h-10 w-10 rounded-full object-cover ring-2 ring-white/20"
+          />
           <span className="text-lg font-semibold tracking-tight">
             Educar para Transformar
           </span>
@@ -138,6 +142,7 @@ export const Header: React.FC = () => {
                       <BookOpenCheck size={14} />
                       <span>Inscripcion publica</span>
                     </Link>
+
                     <hr className="my-1 border-slate-100" />
                     <button
                       onClick={handleLogout}

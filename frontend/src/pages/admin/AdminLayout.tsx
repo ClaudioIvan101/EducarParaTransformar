@@ -4,13 +4,12 @@ import {
   ArrowLeft,
   Bell,
   ClipboardList,
-  HelpCircle,
   LogOut,
   Menu,
   MessageSquareWarning,
   Newspaper,
   PlusSquare,
-  Settings,
+  Users,
   X,
 } from 'lucide-react';
 import {
@@ -18,12 +17,14 @@ import {
   getRoleHomePath,
   getSession,
 } from '../../features/auth/services/demoAuth';
+import { getEnrollmentStatusCount } from '../../features/inscripcion/services/enrollmentStore';
 
 export const AdminLayout: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const session = getSession();
+  const [pendingRequests, setPendingRequests] = useState(() => getEnrollmentStatusCount('pending'));
 
   useEffect(() => {
     if (!session) {
@@ -35,6 +36,17 @@ export const AdminLayout: React.FC = () => {
       navigate(getRoleHomePath(session.role));
     }
   }, [navigate, session]);
+
+  useEffect(() => {
+    const handleUpdate = () => {
+      setPendingRequests(getEnrollmentStatusCount('pending'));
+    };
+
+    window.addEventListener('enrollment-updated', handleUpdate);
+    return () => {
+      window.removeEventListener('enrollment-updated', handleUpdate);
+    };
+  }, []);
 
   const handleLogout = () => {
     clearSession();
@@ -68,22 +80,14 @@ export const AdminLayout: React.FC = () => {
       path: '/privado/crear-noticia',
     },
     {
-      label: 'Alta Alumno Demo',
+      label: 'Crear Cuenta Alumno',
       icon: <PlusSquare size={20} />,
       path: '/privado/crear-usuario',
     },
-  ];
-
-  const bottomItems = [
     {
-      label: 'Ajustes',
-      icon: <Settings size={18} />,
-      onClick: () => alert('Ajustes institucionales en construccion.'),
-    },
-    {
-      label: 'Ayuda',
-      icon: <HelpCircle size={18} />,
-      onClick: () => alert('Centro de ayuda institucional.'),
+      label: 'Cuentas del Sistema',
+      icon: <Users size={20} />,
+      path: '/privado/cuentas',
     },
   ];
 
@@ -94,7 +98,8 @@ export const AdminLayout: React.FC = () => {
     if (location.pathname === '/privado/opiniones') return 'Moderacion de Opiniones';
     if (location.pathname === '/privado/noticias') return 'Gestion de Noticias';
     if (location.pathname === '/privado/crear-noticia') return 'Crear Noticia';
-    if (location.pathname === '/privado/crear-usuario') return 'Alta de Alumno Demo';
+    if (location.pathname === '/privado/crear-usuario') return 'Crear Cuenta de Alumno';
+    if (location.pathname === '/privado/cuentas') return 'Cuentas del Sistema';
     if (location.pathname.startsWith('/privado/editar-noticia')) return 'Editar Noticia';
     return 'Panel Institucional';
   };
@@ -103,7 +108,11 @@ export const AdminLayout: React.FC = () => {
     <div className="flex min-h-screen bg-slate-50 font-sans text-slate-800">
       <aside className="fixed z-30 hidden h-screen w-64 flex-col border-r border-slate-200/80 bg-white shadow-[4px_0_24px_rgba(26,82,118,0.03)] md:flex">
         <div className="flex items-center gap-3 border-b border-slate-100 p-6">
-          <span className="text-2xl">🎓</span>
+          <img
+            src="/logo/logo%20(6).png"
+            alt="Logo Educar Institucional"
+            className="h-11 w-11 rounded-full object-cover ring-1 ring-slate-200"
+          />
           <div>
             <h1 className="text-base font-bold leading-none tracking-tight text-edu-primary">
               Educar Institucional
@@ -137,16 +146,6 @@ export const AdminLayout: React.FC = () => {
         </nav>
 
         <div className="space-y-1 border-t border-slate-100 p-4">
-          {bottomItems.map((item) => (
-            <button
-              key={item.label}
-              onClick={item.onClick}
-              className="flex w-full cursor-pointer items-center gap-3 rounded-lg px-4 py-2.5 text-left text-xs font-bold text-slate-500 transition-colors hover:bg-slate-50 hover:text-edu-secondary"
-            >
-              <div className="text-slate-400">{item.icon}</div>
-              <span>{item.label}</span>
-            </button>
-          ))}
           <button
             onClick={handleLogout}
             className="mt-2 flex w-full cursor-pointer items-center gap-3 border-t border-dashed border-slate-100 px-4 pt-3 text-left text-xs font-bold text-red-600 transition-colors hover:bg-red-50"
@@ -171,7 +170,11 @@ export const AdminLayout: React.FC = () => {
       >
         <div className="flex items-center justify-between border-b border-slate-100 p-6">
           <div className="flex items-center gap-3">
-            <span className="text-2xl">🎓</span>
+            <img
+              src="/logo/logo%20(6).png"
+              alt="Logo Educar Institucional"
+              className="h-11 w-11 rounded-full object-cover ring-1 ring-slate-200"
+            />
             <div>
               <h1 className="text-base font-bold leading-none tracking-tight text-edu-primary">
                 Educar Institucional
@@ -213,19 +216,6 @@ export const AdminLayout: React.FC = () => {
         </nav>
 
         <div className="space-y-1 border-t border-slate-100 p-4">
-          {bottomItems.map((item) => (
-            <button
-              key={item.label}
-              onClick={() => {
-                setIsMobileMenuOpen(false);
-                item.onClick();
-              }}
-              className="flex w-full cursor-pointer items-center gap-3 rounded-lg px-4 py-2.5 text-left text-xs font-bold text-slate-500 transition-colors hover:bg-slate-50 hover:text-edu-secondary"
-            >
-              <div className="text-slate-400">{item.icon}</div>
-              <span>{item.label}</span>
-            </button>
-          ))}
           <button
             onClick={() => {
               setIsMobileMenuOpen(false);
@@ -248,9 +238,20 @@ export const AdminLayout: React.FC = () => {
             >
               <Menu size={22} />
             </button>
-            <h2 className="text-base font-bold tracking-tight text-edu-primary md:text-lg">
-              {getPageTitle()}
-            </h2>
+            <div className="space-y-1">
+              <h2 className="text-base font-bold tracking-tight text-edu-primary md:text-lg">
+                {getPageTitle()}
+              </h2>
+              <Link
+                to="/privado/solicitudes"
+                className="inline-flex items-center gap-2 text-[11px] font-semibold text-slate-500 transition hover:text-edu-secondary"
+              >
+                <span>Solicitudes de inscripcion recibidas</span>
+                <span className="rounded-full bg-edu-secondary/10 px-2 py-0.5 text-[10px] font-bold text-edu-primary">
+                  {pendingRequests}
+                </span>
+              </Link>
+            </div>
           </div>
 
           <div className="flex items-center gap-4">
@@ -258,24 +259,10 @@ export const AdminLayout: React.FC = () => {
               <Bell size={18} />
               <span className="absolute right-1.5 top-1.5 h-1.5 w-1.5 rounded-full bg-edu-secondary" />
             </button>
-
-            <div className="flex items-center gap-2 border-l border-slate-200 pl-4">
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-edu-primary text-xs font-bold text-white shadow-sm">
-                DD
-              </div>
-              <div className="hidden text-left sm:block">
-                <p className="text-xs font-bold leading-none text-slate-700">
-                  {session?.name ?? 'Director Demo'}
-                </p>
-                <p className="mt-0.5 text-[9px] font-bold uppercase tracking-wider text-edu-secondary">
-                  Autoridad
-                </p>
-              </div>
-            </div>
           </div>
         </header>
 
-        <main className="mx-auto w-full max-w-7xl flex-grow p-4 md:p-8">
+        <main className="flex-1 p-6">
           <Outlet />
         </main>
       </div>

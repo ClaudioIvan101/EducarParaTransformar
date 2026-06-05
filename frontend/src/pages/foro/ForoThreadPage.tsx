@@ -11,11 +11,13 @@ import {
   ChevronDown
 } from 'lucide-react';
 import { forumStore } from '../../features/comunidad/services/forumStore';
+import { getSession } from '../../features/auth/services/demoAuth';
 import type { Discussion } from '../../features/comunidad/services/forumStore';
 
 export const ForoThreadPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const isReadOnly = getSession()?.role === 'parent';
   const [discussion, setDiscussion] = useState<Discussion | null>(null);
   const [newReplyContent, setNewReplyContent] = useState('');
   const [activeReplyId, setActiveReplyId] = useState<number | null>(null); // For nested replying
@@ -38,6 +40,7 @@ export const ForoThreadPage: React.FC = () => {
 
   const handlePostReply = (e: React.FormEvent) => {
     e.preventDefault();
+    if (isReadOnly) return;
     if (!newReplyContent.trim() || !discussion) return;
 
     forumStore.addReply(discussion.id, newReplyContent.trim());
@@ -47,6 +50,7 @@ export const ForoThreadPage: React.FC = () => {
 
   const handlePostNestedReply = (e: React.FormEvent, parentId: number) => {
     e.preventDefault();
+    if (isReadOnly) return;
     if (!nestedReplyContent.trim() || !discussion) return;
 
     forumStore.addReply(discussion.id, nestedReplyContent.trim(), parentId);
@@ -56,12 +60,14 @@ export const ForoThreadPage: React.FC = () => {
   };
 
   const handleVoteDiscussion = (dir: 'up' | 'down') => {
+    if (isReadOnly) return;
     if (!discussion) return;
     forumStore.voteDiscussion(discussion.id, dir);
     loadThread();
   };
 
   const handleVoteReply = (replyId: number, dir: 'up' | 'down') => {
+    if (isReadOnly) return;
     if (!discussion) return;
     forumStore.voteReply(discussion.id, replyId, dir);
     loadThread();
@@ -112,6 +118,12 @@ export const ForoThreadPage: React.FC = () => {
         
         {/* Left Column: Post and Thread replies */}
         <div className="lg:col-span-8 space-y-6">
+          {isReadOnly && (
+            <div className="rounded-2xl border border-sky-100 bg-sky-50 px-4 py-3 text-sm text-sky-800">
+              Estas navegando el hilo en modo lectura familiar. Puedes ver el
+              contenido, pero no responder ni votar.
+            </div>
+          )}
           
           {/* Main Original Post Card */}
           <article className="bg-white p-6 rounded-2xl border border-slate-200/60 shadow-sm space-y-5">
@@ -147,6 +159,7 @@ export const ForoThreadPage: React.FC = () => {
               <div className="flex items-center gap-1 bg-slate-50 border border-slate-100 rounded-lg p-0.5 select-none">
                 <button
                   onClick={() => handleVoteDiscussion('up')}
+                  disabled={isReadOnly}
                   className={`p-1 rounded hover:bg-slate-200/50 transition-colors cursor-pointer ${
                     discussion.userVoted === 'up' ? 'text-green-600' : 'text-slate-400'
                   }`}
@@ -161,6 +174,7 @@ export const ForoThreadPage: React.FC = () => {
                 </span>
                 <button
                   onClick={() => handleVoteDiscussion('down')}
+                  disabled={isReadOnly}
                   className={`p-1 rounded hover:bg-slate-200/50 transition-colors cursor-pointer ${
                     discussion.userVoted === 'down' ? 'text-red-500' : 'text-slate-400'
                   }`}
@@ -196,6 +210,7 @@ export const ForoThreadPage: React.FC = () => {
           </article>
 
           {/* Comment/Reply Input Box */}
+          {!isReadOnly && (
           <div className="bg-white p-5 rounded-2xl border border-slate-200/60 shadow-sm flex gap-4 items-start border-l-4 border-edu-secondary">
             <div className="w-9 h-9 rounded-full bg-edu-secondary text-white font-bold text-xs flex items-center justify-center shrink-0">
               MS
@@ -219,6 +234,7 @@ export const ForoThreadPage: React.FC = () => {
               </div>
             </form>
           </div>
+          )}
 
           {/* Thread Replies List */}
           <section className="space-y-4">
@@ -257,6 +273,7 @@ export const ForoThreadPage: React.FC = () => {
                         <div className="flex items-center gap-1 bg-slate-50 border border-slate-100 rounded-md py-0.5 px-1 select-none">
                           <button
                             onClick={() => handleVoteReply(reply.id, 'up')}
+                            disabled={isReadOnly}
                             className={`p-0.5 rounded hover:bg-slate-200/50 transition-colors cursor-pointer ${
                               reply.userVoted === 'up' ? 'text-green-600' : 'text-slate-400'
                             }`}
@@ -270,6 +287,7 @@ export const ForoThreadPage: React.FC = () => {
                           </span>
                           <button
                             onClick={() => handleVoteReply(reply.id, 'down')}
+                            disabled={isReadOnly}
                             className={`p-0.5 rounded hover:bg-slate-200/50 transition-colors cursor-pointer ${
                               reply.userVoted === 'down' ? 'text-red-500' : 'text-slate-400'
                             }`}
@@ -284,6 +302,7 @@ export const ForoThreadPage: React.FC = () => {
                       </p>
 
                       <div className="pl-10 flex gap-4 text-[9px] font-bold uppercase tracking-wider text-slate-400">
+                        {!isReadOnly && (
                         <button
                           onClick={() => {
                             setActiveReplyId(activeReplyId === reply.id ? null : reply.id);
@@ -293,6 +312,7 @@ export const ForoThreadPage: React.FC = () => {
                         >
                           Responder
                         </button>
+                        )}
                       </div>
 
                       {/* Inline Reply input for nested replying */}
@@ -346,6 +366,7 @@ export const ForoThreadPage: React.FC = () => {
                           <div className="flex items-center gap-0.5 bg-white border border-slate-100 rounded-md py-0.5 px-0.5 select-none">
                             <button
                               onClick={() => handleVoteReply(nestReply.id, 'up')}
+                              disabled={isReadOnly}
                               className={`p-0.5 rounded hover:bg-slate-200/50 transition-colors cursor-pointer ${
                                 nestReply.userVoted === 'up' ? 'text-green-600' : 'text-slate-400'
                               }`}
@@ -359,6 +380,7 @@ export const ForoThreadPage: React.FC = () => {
                             </span>
                             <button
                               onClick={() => handleVoteReply(nestReply.id, 'down')}
+                              disabled={isReadOnly}
                               className={`p-0.5 rounded hover:bg-slate-200/50 transition-colors cursor-pointer ${
                                 nestReply.userVoted === 'down' ? 'text-red-500' : 'text-slate-400'
                               }`}

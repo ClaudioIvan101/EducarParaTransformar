@@ -53,3 +53,10 @@ export interface LocalDemoAccount {
   relation?: string;
   department?: string;
 }
+
+export interface RegisteredBackendUser {
+  email: string;
+  dni: string;
+  role: Extract<DemoUserRole, 'student' | 'teacher' | 'parent'>;
+  createdAt: string;
+}

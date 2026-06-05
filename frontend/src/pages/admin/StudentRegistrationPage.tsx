@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import {
   AlertTriangle,
   BadgeCheck,
@@ -14,10 +15,13 @@ import {
   getInstitutionalStudentByDni,
   getSession,
 } from '../../features/auth/services/demoAuth';
+import { markEnrollmentAccountCreatedByDni } from '../../features/inscripcion/services/enrollmentStore';
 
 export const StudentRegistrationPage: React.FC = () => {
-  const [dni, setDni] = useState('46463269');
-  const [searchedDni, setSearchedDni] = useState('46463269');
+  const [searchParams] = useSearchParams();
+  const initialDni = searchParams.get('dni')?.replace(/\D/g, '') || '46463269';
+  const [dni, setDni] = useState(initialDni);
+  const [searchedDni, setSearchedDni] = useState(initialDni);
   const [accountVersion, setAccountVersion] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -27,6 +31,11 @@ export const StudentRegistrationPage: React.FC = () => {
     () => getInstitutionalStudentByDni(searchedDni.trim()),
     [accountVersion, searchedDni],
   );
+
+  React.useEffect(() => {
+    setDni(initialDni);
+    setSearchedDni(initialDni);
+  }, [initialDni]);
 
   function handleSearch(event: React.FormEvent) {
     event.preventDefault();
@@ -65,6 +74,7 @@ export const StudentRegistrationPage: React.FC = () => {
 
     try {
       await createStudentAccount(session.token, getDefaultStudentPayload(student));
+      markEnrollmentAccountCreatedByDni(student.dni);
       setAccountVersion((current) => current + 1);
       setSuccessMessage(
         'Cuenta creada con exito. El alumno ya puede iniciar sesion con juan@educar.com y la contrasena programacion2026.',
@@ -87,7 +97,7 @@ export const StudentRegistrationPage: React.FC = () => {
         <div className="max-w-3xl space-y-3 text-left">
           <span className="inline-flex items-center gap-2 rounded-full bg-[#0f52ba]/10 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.22em] text-[#0f52ba]">
             <UserRoundSearch className="h-4 w-4" />
-            Alta alumno demo
+            Crear cuenta de alumno
           </span>
           <h1 className="text-2xl font-bold text-edu-primary">
             Crear cuenta desde el padron institucional
@@ -101,7 +111,7 @@ export const StudentRegistrationPage: React.FC = () => {
             y dejar las credenciales listas para el segundo login.
           </p>
           <p className="text-xs font-medium text-slate-500">
-            En este MVP el alta disponible es solo para
+            En esta pantalla el alta disponible es solo para
             <strong className="mx-1 text-slate-700">Alumno</strong>. Las cuentas de
             <strong className="mx-1 text-slate-700">Docente</strong> y
             <strong className="mx-1 text-slate-700">Autoridad</strong> quedan fuera
@@ -162,7 +172,7 @@ export const StudentRegistrationPage: React.FC = () => {
                 No encontramos el DNI en el padron demo.
               </p>
               <p className="mt-2 max-w-sm text-xs leading-relaxed text-slate-500">
-                Proba con el alumno institucional cargado para la demo:
+                Proba con el alumno institucional cargado para esta prueba:
                 <strong className="mx-1 text-slate-700">46463269</strong>.
               </p>
             </div>

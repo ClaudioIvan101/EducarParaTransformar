@@ -80,3 +80,9 @@ export function updateOpinionStatus(id: string, status: PublicOpinionStatus) {
   writeOpinions(updated);
   return updated.find((item) => item.id === id) ?? null;
 }
+
+export function deletePublicOpinion(id: string) {
+  const updated = readOpinions().filter((item) => item.id !== id);
+  writeOpinions(updated);
+  return updated;
+}

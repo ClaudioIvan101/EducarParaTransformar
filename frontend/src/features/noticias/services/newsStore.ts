@@ -134,25 +134,7 @@ export const newsStore = {
       return DEFAULT_ARTICLES;
     }
     try {
-      const parsed: Article[] = JSON.parse(data);
-      
-      // Auto-migrate old images to new unique generated ones
-      let needsMigration = false;
-      const migrated = parsed.map(article => {
-        const defaultArt = DEFAULT_ARTICLES.find(d => d.id === article.id);
-        if (defaultArt && article.image !== defaultArt.image) {
-          needsMigration = true;
-          return { ...article, image: defaultArt.image };
-        }
-        return article;
-      });
-
-      if (needsMigration) {
-        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(migrated));
-        return migrated;
-      }
-      
-      return parsed;
+      return JSON.parse(data) as Article[];
     } catch {
       return DEFAULT_ARTICLES;
     }

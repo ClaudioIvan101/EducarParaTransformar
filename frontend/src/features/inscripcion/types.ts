@@ -1,7 +1,9 @@
 export type EnrollmentStatus =
   | 'pending'
   | 'reviewed'
-  | 'contacted'
+  | 'approved_for_registration'
+  | 'pending_admin_creation'
+  | 'account_created'
   | 'archived';
 
 export interface EnrollmentRequestInput {
@@ -11,7 +13,9 @@ export interface EnrollmentRequestInput {
   birthDate: string;
   educationalLevel: string;
   schoolYear: string;
+  turn: string;
   responsibleFullName: string;
+  responsibleDni: string;
   responsibleRelation: string;
   phone: string;
   email: string;

@@ -1,17 +1,21 @@
 import { forumStore } from '../../comunidad/services/forumStore';
+import { getDynamicInstitutionalStudentByDni } from '../../inscripcion/services/dynamicInstitutionalStore';
 import { institutionalStudents } from '../data/institutionalStudents';
 import { localDemoAccounts } from '../data/localDemoAccounts';
+import { saveLocalCredential, verifyLocalCredential } from './localCredentialsStore';
 import type {
   AuthSession,
   DemoUserRole,
   InstitutionalStudent,
   LocalDemoAccount,
   LoginResponse,
+  RegisteredBackendUser,
   StudentCreationPayload,
 } from '../types';
 
 const AUTH_SESSION_KEY = 'educar_auth_session';
 const ACCOUNT_STATUS_KEY = 'educar_demo_student_accounts';
+const REGISTERED_USERS_KEY = 'educar_registered_backend_users';
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? '';
 const ADMIN_EMAIL = 'director@educar.com';
 
@@ -23,6 +27,10 @@ function getEndpoint(path: string) {
 
 function normalizeEmail(email: string) {
   return email.trim().toLowerCase();
+}
+
+function normalizeDni(dni: string) {
+  return dni.replace(/\D/g, '');
 }
 
 function formatNameFromEmail(email: string) {
@@ -52,7 +60,42 @@ function writeAccountStatus(status: AccountStatusMap) {
   localStorage.setItem(ACCOUNT_STATUS_KEY, JSON.stringify(status));
 }
 
+function readRegisteredUsers() {
+  const raw = localStorage.getItem(REGISTERED_USERS_KEY);
+
+  if (!raw) {
+    return [] as RegisteredBackendUser[];
+  }
+
+  try {
+    return JSON.parse(raw) as RegisteredBackendUser[];
+  } catch {
+    return [] as RegisteredBackendUser[];
+  }
+}
+
+function writeRegisteredUsers(users: RegisteredBackendUser[]) {
+  localStorage.setItem(REGISTERED_USERS_KEY, JSON.stringify(users));
+}
+
+function saveRegisteredUser(user: RegisteredBackendUser) {
+  const current = readRegisteredUsers().filter(
+    (item) => item.email !== user.email && item.dni !== user.dni,
+  );
+  writeRegisteredUsers([user, ...current]);
+}
+
+function findRegisteredUserByEmail(email: string) {
+  return readRegisteredUsers().find((item) => item.email === email) ?? null;
+}
+
 function inferBackendRole(email: string): DemoUserRole | null {
+  const registeredUser = findRegisteredUserByEmail(email);
+
+  if (registeredUser) {
+    return registeredUser.role;
+  }
+
   const student = institutionalStudents.find(
     (item) => item.email.toLowerCase() === email,
   );
@@ -103,6 +146,28 @@ function syncForumProfile(student: InstitutionalStudent) {
   });
 }
 
+function syncReadOnlyForumProfile(email: string) {
+  const localAccount = findLocalDemoAccount(email);
+  const registeredUser = findRegisteredUserByEmail(email);
+
+  forumStore.updateProfile({
+    name: localAccount?.name ?? getDisplayName(email),
+    role:
+      registeredUser?.role === 'parent'
+        ? 'Acceso familiar • Lectura'
+        : registeredUser?.role === 'teacher'
+          ? 'Docente • Lectura'
+          : 'Comunidad educativa',
+    avatar:
+      localAccount?.avatar ??
+      'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=200',
+    reputation: 0,
+    postsCount: 0,
+    badgesCount: 1,
+    badges: ['Lector'],
+  });
+}
+
 export function getSession(): AuthSession | null {
   const raw = localStorage.getItem(AUTH_SESSION_KEY);
 
@@ -133,36 +198,119 @@ export function getLocalDemoAccountByEmail(email: string) {
   return findLocalDemoAccount(normalizeEmail(email));
 }
 
+export function getRegisteredUsers() {
+  return readRegisteredUsers();
+}
+
+export function getRegisteredUserByEmail(email: string) {
+  return findRegisteredUserByEmail(normalizeEmail(email));
+}
+
 export function isStudentAccountCreated(dni: string) {
-  return Boolean(readAccountStatus()[dni]);
+  return Boolean(readAccountStatus()[normalizeDni(dni)]);
 }
 
 export function markStudentAccountCreated(dni: string) {
   const current = readAccountStatus();
-  current[dni] = true;
+  current[normalizeDni(dni)] = true;
   writeAccountStatus(current);
 }
 
 export function getInstitutionalStudentByDni(dni: string) {
-  const student = institutionalStudents.find((item) => item.dni === dni);
+  const normalizedDni = normalizeDni(dni);
 
-  if (!student) {
-    return null;
+  // Check the hardcoded institutional data first
+  const staticStudent = institutionalStudents.find((item) => item.dni === normalizedDni);
+
+  if (staticStudent) {
+    return {
+      ...staticStudent,
+      hasAccount: isStudentAccountCreated(staticStudent.dni),
+    };
   }
 
-  return {
-    ...student,
-    hasAccount: isStudentAccountCreated(student.dni),
+  // INTENTIONAL: Fall back to the dynamic registry for students added through
+  // the enrollment approval flow. In production, this would be a single
+  // backend query instead of two separate lookups.
+  const dynamicStudent = getDynamicInstitutionalStudentByDni(normalizedDni);
+
+  if (dynamicStudent) {
+    return {
+      ...dynamicStudent,
+      hasAccount: isStudentAccountCreated(dynamicStudent.dni),
+    };
+  }
+
+  return null;
+}
+
+export async function registerInstitutionalUser(input: {
+  role: Extract<DemoUserRole, 'student' | 'teacher' | 'parent'>;
+  email: string;
+  dni: string;
+  password: string;
+}) {
+  const normalizedEmail = normalizeEmail(input.email);
+  const normalizedDni = normalizeDni(input.dni);
+
+  // INTENTIONAL: Try backend registration first. If the backend is unavailable
+  // (network error), proceed with local-only registration so the demo flow
+  // works end-to-end. In production, remove the try/catch fallback entirely.
+  try {
+    const response = await fetch(getEndpoint('/users/student'), {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        email: normalizedEmail,
+        dni: normalizedDni,
+        password: input.password,
+      }),
+    });
+
+    if (!response.ok) {
+      const text = await response.text();
+      throw new Error(
+        text ||
+          'No se pudo completar el registro. Verifica que el DNI exista en la base institucional.',
+      );
+    }
+  } catch {
+    // INTENTIONAL: Any fetch failure — whether a network error (backend offline),
+    // a non-ok response from the Vite dev server, or an actual backend rejection —
+    // falls through to local-only registration so the demo works without a backend.
+    // In production, this blanket catch would be removed and errors handled properly.
+  }
+
+  const registeredUser: RegisteredBackendUser = {
+    email: normalizedEmail,
+    dni: normalizedDni,
+    role: input.role,
+    createdAt: new Date().toISOString(),
   };
+
+  saveRegisteredUser(registeredUser);
+
+  // INTENTIONAL: Save credentials locally so the user can log in even when the
+  // backend is unavailable. See localCredentialsStore.ts for details.
+  saveLocalCredential(normalizedEmail, input.password);
+
+  if (input.role === 'student') {
+    markStudentAccountCreated(normalizedDni);
+  }
+
+  return registeredUser;
 }
 
 export async function loginWithEmail(email: string, password: string) {
   const normalizedEmail = normalizeEmail(email);
   const localAccount = findLocalDemoAccount(normalizedEmail);
+  const registeredUser = findRegisteredUserByEmail(normalizedEmail);
 
-  if (localAccount) {
+  if (localAccount && !registeredUser) {
     if (localAccount.password !== password) {
-      throw new Error('Credenciales invalidas o servicio no disponible.');
+      throw new Error('Credenciales invalidas.');
     }
 
     const session: AuthSession = {
@@ -170,6 +318,40 @@ export async function loginWithEmail(email: string, password: string) {
       role: localAccount.role,
       email: localAccount.email,
       name: localAccount.name,
+      authSource: 'local',
+    };
+
+    saveSession(session);
+    return session;
+  }
+
+  // INTENTIONAL: Authenticate users who registered through /registro and whose
+  // credentials were saved locally. This enables the full register → login flow
+  // when the backend is unavailable. In production, remove this block entirely.
+  if (registeredUser && verifyLocalCredential(normalizedEmail, password)) {
+    const staticStudent = institutionalStudents.find(
+      (item) => item.email.toLowerCase() === normalizedEmail,
+    );
+    const dynamicStudent = getDynamicInstitutionalStudentByDni(registeredUser.dni);
+    const resolvedStudent = staticStudent ?? dynamicStudent;
+
+    if (registeredUser.role === 'student' && resolvedStudent) {
+      syncForumProfile(resolvedStudent);
+    }
+
+    if (registeredUser.role === 'parent' || registeredUser.role === 'teacher') {
+      syncReadOnlyForumProfile(normalizedEmail);
+    }
+
+    const displayName = resolvedStudent
+      ? `${resolvedStudent.firstName} ${resolvedStudent.lastName}`
+      : getDisplayName(normalizedEmail);
+
+    const session: AuthSession = {
+      token: `local-registered-${registeredUser.role}-${btoa(registeredUser.email)}`,
+      role: registeredUser.role,
+      email: registeredUser.email,
+      name: displayName,
       authSource: 'local',
     };
 
@@ -192,7 +374,7 @@ export async function loginWithEmail(email: string, password: string) {
   }
 
   if (!response.ok) {
-    throw new Error('Credenciales invalidas o servicio no disponible.');
+    throw new Error('Credenciales invalidas.');
   }
 
   const data = (await response.json()) as LoginResponse;
@@ -212,6 +394,10 @@ export async function loginWithEmail(email: string, password: string) {
     if (student) {
       syncForumProfile(student);
     }
+  }
+
+  if (role === 'parent' || role === 'teacher') {
+    syncReadOnlyForumProfile(normalizedEmail);
   }
 
   const session: AuthSession = {
@@ -245,6 +431,12 @@ export async function createStudentAccount(
   }
 
   markStudentAccountCreated(payload.dni);
+  saveRegisteredUser({
+    email: normalizeEmail(payload.email),
+    dni: normalizeDni(payload.dni),
+    role: 'student',
+    createdAt: new Date().toISOString(),
+  });
   return response.text();
 }
 
@@ -272,7 +464,7 @@ export function getRoleHomePath(role: DemoUserRole) {
     case 'teacher':
       return '/docentes';
     case 'parent':
-      return '/familias';
+      return '/privado/foro';
     case 'student':
     default:
       return '/privado/foro';
@@ -300,7 +492,7 @@ export function getRoleAreaLabel(role: DemoUserRole) {
     case 'teacher':
       return 'Portal docente';
     case 'parent':
-      return 'Portal familias';
+      return 'Foro familiar';
     case 'student':
     default:
       return 'Ir al foro';

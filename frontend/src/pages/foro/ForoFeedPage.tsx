@@ -17,10 +17,12 @@ import {
   FileText
 } from 'lucide-react';
 import { forumStore } from '../../features/comunidad/services/forumStore';
+import { getSession } from '../../features/auth/services/demoAuth';
 import type { Discussion } from '../../features/comunidad/services/forumStore';
 
 export const ForoFeedPage: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
+  const isReadOnly = getSession()?.role === 'parent';
 
   // State
   const [discussions, setDiscussions] = useState<Discussion[]>([]);
@@ -37,10 +39,14 @@ export const ForoFeedPage: React.FC = () => {
   useEffect(() => {
     // Check if modal needs to be opened from URL
     if (searchParams.get('create') === 'true') {
-      setIsModalOpen(true);
+      if (isReadOnly) {
+        setIsModalOpen(false);
+      } else {
+        setIsModalOpen(true);
+      }
     }
     loadDiscussions();
-  }, [searchParams]);
+  }, [isReadOnly, searchParams]);
 
   const loadDiscussions = () => {
     let list = forumStore.getDiscussions();
@@ -78,6 +84,9 @@ export const ForoFeedPage: React.FC = () => {
   }, [activeTab]);
 
   const handleVote = (id: number, dir: 'up' | 'down') => {
+    if (isReadOnly) {
+      return;
+    }
     forumStore.voteDiscussion(id, dir);
     loadDiscussions();
   };
@@ -92,6 +101,11 @@ export const ForoFeedPage: React.FC = () => {
 
   const handleCreatePost = (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (isReadOnly) {
+      handleCloseModal();
+      return;
+    }
 
     if (!newTitle || !newLead || !newBody) {
       alert('Por favor, completá los campos obligatorios.');
@@ -293,8 +307,9 @@ export const ForoFeedPage: React.FC = () => {
                 >
                   {/* Upvote/Downvote panel */}
                   <div className="flex flex-col items-center bg-slate-50 rounded-lg py-1 px-1.5 gap-1 select-none border border-slate-100/50">
-                    <button
+                      <button
                       onClick={() => handleVote(disc.id, 'up')}
+                      disabled={isReadOnly}
                       className={`p-1 rounded hover:bg-slate-200/50 transition-colors cursor-pointer ${
                         disc.userVoted === 'up' ? 'text-green-600' : 'text-slate-400'
                       }`}
@@ -308,6 +323,7 @@ export const ForoFeedPage: React.FC = () => {
                     </span>
                     <button
                       onClick={() => handleVote(disc.id, 'down')}
+                      disabled={isReadOnly}
                       className={`p-1 rounded hover:bg-slate-200/50 transition-colors cursor-pointer ${
                         disc.userVoted === 'down' ? 'text-red-500' : 'text-slate-400'
                       }`}
@@ -389,7 +405,7 @@ export const ForoFeedPage: React.FC = () => {
       </div>
 
       {/* Crear Discusión Modal */}
-      {isModalOpen && (
+      {isModalOpen && !isReadOnly && (
         <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-100 animate-scaleUp">
             

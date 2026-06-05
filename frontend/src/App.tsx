@@ -10,6 +10,7 @@ import { JobsPage } from './pages/jobs/JobsPage';
 import { LoginPage } from './pages/login/LoginPage';
 import { EnrollmentPage } from './pages/enrollment/EnrollmentPage';
 import { OpinionsPage } from './pages/opiniones/OpinionsPage';
+import { RegistrationPage } from './pages/registration/RegistrationPage';
 import { ScrollToTop } from './shared/components/ScrollToTop';
 import { AdminLayout } from './pages/admin/AdminLayout';
 import { GestionNoticiasPage } from './pages/admin/GestionNoticiasPage';
@@ -17,6 +18,7 @@ import { CrearNoticiaPage } from './pages/admin/CrearNoticiaPage';
 import { StudentRegistrationPage } from './pages/admin/StudentRegistrationPage';
 import { EnrollmentRequestsPage } from './pages/admin/EnrollmentRequestsPage';
 import { OpinionModerationPage } from './pages/admin/OpinionModerationPage';
+import { CuentasDelSistemaPage } from './pages/admin/CuentasDelSistemaPage';
 import { ForoLayout } from './pages/foro/ForoLayout';
 import { ForoFeedPage } from './pages/foro/ForoFeedPage';
 import { ForoThreadPage } from './pages/foro/ForoThreadPage';
@@ -68,6 +70,7 @@ function App() {
           <Route path="/noticias" element={<NewsPage />} />
           <Route path="/empleo" element={<JobsPage />} />
           <Route path="/inscripcion" element={<EnrollmentPage />} />
+          <Route path="/registro" element={<RegistrationPage />} />
           <Route path="/opiniones" element={<OpinionsPage />} />
           <Route path="/login" element={<LoginPage />} />
         </Route>
@@ -87,12 +90,13 @@ function App() {
           <Route path="crear-noticia" element={<CrearNoticiaPage />} />
           <Route path="editar-noticia/:id" element={<CrearNoticiaPage />} />
           <Route path="crear-usuario" element={<StudentRegistrationPage />} />
+          <Route path="cuentas" element={<CuentasDelSistemaPage />} />
         </Route>
 
         <Route
           path="/privado/foro"
           element={
-            <RoleProtectedRoute allowedRoles={['student']}>
+            <RoleProtectedRoute allowedRoles={['student', 'parent']}>
               <ForoLayout />
             </RoleProtectedRoute>
           }
