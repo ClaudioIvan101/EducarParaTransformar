@@ -45,4 +45,11 @@ public class Student extends Person {
         this.educationalLevel = educationalLevel;
         this.fileNumber = fileNumber; // Se asignará automáticamente al guardar
     }
+
+    private String generateFileNumber() {
+        // Genera un legajo único basado en el DNI y el año de ingreso
+        String dniPart = String.valueOf(getDni()).substring(0, 6); // Últimos 6 dígitos del DNI
+        String yearPart = String.valueOf(yearOfEnrollment);
+        return "EST-" + dniPart + "-" + yearPart;
+    }
 }

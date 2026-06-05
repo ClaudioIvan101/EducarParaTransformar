@@ -48,7 +48,6 @@ export const AboutPage: React.FC = () => {
           <img src={imagenCampusNeutral} alt="Vista panorámica de nuestras instalaciones" className="absolute inset-0 w-full h-full object-cover opacity-35" />
           <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-edu-primary/40" />
           <div className="max-w-4xl mx-auto relative z-10">
-            <span className="text-xs uppercase font-bold tracking-widest text-edu-accent bg-white/10 px-3 py-1 rounded-full backdrop-blur-sm mb-4 inline-block">Institucional</span>
             <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-4 drop-shadow-sm">Quiénes Somos</h1>
             <p className="text-slate-100 text-base md:text-lg max-w-2xl mx-auto leading-relaxed">Conoce el propósito, el proyecto educativo y el equipo humano detrás del Centro Educativo "Educar para Transformar", comprometido con el futuro de Resistencia.</p>
           </div>

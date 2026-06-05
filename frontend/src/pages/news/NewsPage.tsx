@@ -297,7 +297,7 @@ export const NewsPage: React.FC = () => {
                     </button>
                   </div>
                 </div>
-              </div>
+              </ScrollReveal>
             )}
 
             {/* Grilla de Noticias Regulares */}
@@ -344,6 +344,48 @@ export const NewsPage: React.FC = () => {
                     </article>
                   ))}
                 </div>
+                
+                {/* CAMBIO AQUÍ: Un solo ScrollReveal envolviendo toda la grilla */}
+                <ScrollReveal durationMs={2000}>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                    {regularNews.map((article) => (
+                      <article
+                        key={article.id}
+                        onClick={() => handleArticleClick(article.id)}
+                        className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col border border-slate-100 cursor-pointer h-full"
+                      >
+                        <div className="relative h-[220px] overflow-hidden shrink-0">
+                          <img
+                            src={article.image}
+                            alt={article.title}
+                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                          />
+                          <div className="absolute top-4 left-4">
+                            <span className="px-3 py-1 bg-white/90 text-edu-primary text-[10px] font-bold uppercase tracking-wider rounded-full shadow-sm backdrop-blur-sm">
+                              {article.category}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="p-6 flex flex-col flex-grow">
+                          <div className="flex items-center gap-2 mb-3 text-slate-400 text-xs">
+                            <Calendar size={12} />
+                            <span>{article.date}</span>
+                          </div>
+                          <h3 className="text-lg font-bold text-edu-dark mb-2 line-clamp-2 leading-tight group-hover:text-edu-secondary transition-colors duration-300">
+                            {article.title}
+                          </h3>
+                          <p className="text-xs text-slate-500 mb-4 line-clamp-2 flex-grow leading-relaxed">
+                            {article.lead}
+                          </p>
+                          <div className="inline-flex items-center gap-1 text-[11px] font-bold uppercase text-edu-primary group-hover:text-edu-secondary transition-colors mt-2">
+                            <span>Leer más</span>
+                            <ChevronRight size={12} />
+                          </div>
+                        </div>
+                      </article>
+                    ))}
+                  </div>
+                </ScrollReveal>
               </div>
             )}
 
