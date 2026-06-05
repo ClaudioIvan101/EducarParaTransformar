@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.SQLException;
+
 @RestController
 @RequestMapping("/users")
 @RequiredArgsConstructor
@@ -18,7 +20,7 @@ public class UserCommandController {
     private final GetUser getUser;
 
     @PostMapping("")
-    public ResponseEntity<String> addNewUser(@RequestBody AddUserDTO addUserDTO){
+    public ResponseEntity<String> addNewUser(@RequestBody AddUserDTO addUserDTO) throws SQLException {
         addNewUser.handle(addUserDTO);
         return new ResponseEntity<>("Nuevo usuario creado", HttpStatus.CREATED);
     }
@@ -33,7 +35,7 @@ public class UserCommandController {
     }
 
     @PutMapping("/{userId}")
-    public ResponseEntity<String> updateUser(@PathVariable Long userId, @RequestBody AddUserDTO addUserDTO){
+    public ResponseEntity<String> updateUser(@PathVariable Long userId, @RequestBody AddUserDTO addUserDTO) throws SQLException {
         GetUserDTO getUserDTO = getUser.handle(userId);
         if (getUserDTO == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
