@@ -24,8 +24,8 @@ public class PersonDatabaseAdapter implements PersonDatabase {
     }
 
     @Override
-    public GetStudentDTO findById(PersonIdentifier personId) {
-        return null;
+    public Optional<Person> findById(Long personId) {
+        return personRepository.findById(personId);
     }
 
     @Override

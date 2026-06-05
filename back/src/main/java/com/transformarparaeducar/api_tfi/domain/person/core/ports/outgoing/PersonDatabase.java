@@ -9,7 +9,7 @@ import java.util.Optional;
 public interface PersonDatabase {
     PersonIdentifier save(Person person);
 
-    GetStudentDTO findById(PersonIdentifier personId);
+    Optional<Person> findById(Long personId);
 
     Optional<Person> findByEmailAddress(String email);
 
