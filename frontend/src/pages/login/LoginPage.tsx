@@ -1,210 +1,313 @@
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { LogIn, Users, GraduationCap, CheckCircle2, ShieldAlert } from 'lucide-react';
+import {
+  ArrowRight,
+  CheckCircle2,
+  Eye,
+  EyeOff,
+  GraduationCap,
+  KeyRound,
+  Lock,
+  Mail,
+  ShieldAlert,
+  UserRoundPlus,
+} from 'lucide-react';
+import {
+  getInstitutionalStudentByDni,
+  getLocalDemoAccounts,
+  getRoleHomePath,
+  getRoleLabel,
+  getSession,
+  loginWithEmail,
+} from '../../features/auth/services/demoAuth';
 
-/**
- * Página de Acceso Privado (Login) de la plataforma.
- * Ofrece un conmutador interactivo para ingresar como Familia/Alumno o Personal de la institución.
- * Cuenta con estados de validación de entradas y simulación activa de petición de inicio de sesión.
- */
+const demoSteps = [
+  'Ingresa como autoridad con director@educar.com para revisar solicitudes, moderar opiniones y crear la cuenta del alumno demo.',
+  'Usa el acceso local de docente o familia para validar los nuevos portales privados sin depender de Spring Boot.',
+  'Cuando la cuenta de Juan ya exista en backend, el alumno puede volver a entrar por correo y contrasena reales.',
+];
+
 export const LoginPage: React.FC = () => {
   const navigate = useNavigate();
-  // Estados para almacenar el tipo de perfil, credenciales e indicadores de red simulada
-  const [userType, setUserType] = useState<'family' | 'staff'>('family');
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const studentStatus = getInstitutionalStudentByDni('46463269');
+  const localAccounts = getLocalDemoAccounts();
 
-  // Manejador del submit del formulario: realiza validaciones básicas y simula una llamada de red
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!username || !password) {
-      setError('Por favor completá todos los datos de acceso.');
+  const credentialCards = useMemo(
+    () => [
+      {
+        title: 'Autoridad',
+        email: 'director@educar.com',
+        password: 'programacion2026',
+        note: 'Login real por backend para el panel institucional.',
+      },
+      {
+        title: 'Docente',
+        email: localAccounts.find((item) => item.role === 'teacher')?.email ?? '',
+        password: 'programacion2026',
+        note: 'Acceso local demo al portal docente.',
+      },
+      {
+        title: 'Familia',
+        email: localAccounts.find((item) => item.role === 'parent')?.email ?? '',
+        password: 'programacion2026',
+        note: 'Acceso local demo al portal de familias.',
+      },
+      {
+        title: 'Alumno',
+        email: 'juan@educar.com',
+        password: 'programacion2026',
+        note: studentStatus?.hasAccount
+          ? 'La cuenta ya fue creada y entra por backend.'
+          : 'Primero debes crear la cuenta desde el panel institucional.',
+      },
+    ],
+    [localAccounts, studentStatus?.hasAccount],
+  );
+
+  useEffect(() => {
+    const session = getSession();
+
+    if (session) {
+      navigate(getRoleHomePath(session.role), { replace: true });
+    }
+  }, [navigate]);
+
+  async function handleSubmit(event: React.FormEvent) {
+    event.preventDefault();
+
+    if (!email || !password) {
+      setError('Ingresa correo y contrasena para continuar.');
       return;
     }
+
     setError(null);
+    setSuccessMessage(null);
     setIsSubmitting(true);
 
-    // Emula la latencia de respuesta de un servidor de autenticación remoto
-    setTimeout(() => {
-      setIsSubmitting(false);
-      setIsSuccess(true);
-      localStorage.setItem('educar_user_role', userType);
-      
-      // Esperar brevemente para mostrar el mensaje de éxito antes de redirigir
-      setTimeout(() => {
-        if (userType === 'staff') {
-          navigate('/privado/noticias');
-        } else {
-          navigate('/privado/foro');
-        }
-      }, 1000);
-    }, 1500);
-  };
+    try {
+      const session = await loginWithEmail(email, password);
+      setSuccessMessage(
+        `Ingreso exitoso como ${getRoleLabel(session.role).toLowerCase()}. Redirigiendo...`,
+      );
 
-  // Restablece el formulario para facilitar pruebas iterativas con distintos perfiles
-  const handleReset = () => {
-    setUsername('');
-    setPassword('');
-    setIsSuccess(false);
-    localStorage.removeItem('educar_user_role');
-  };
+      setTimeout(() => {
+        navigate(getRoleHomePath(session.role), { replace: true });
+      }, 700);
+    } catch (loginError) {
+      setError(
+        loginError instanceof Error
+          ? loginError.message
+          : 'No se pudo iniciar sesion. Intenta nuevamente.',
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
 
   return (
-    <div className="animate-fadeIn">
-      {/* Sección Hero: Encabezado contextual */}
-      <section className="bg-gradient-to-br from-edu-primary to-edu-secondary text-white py-16 px-4 text-center relative overflow-hidden">
-        <div className="absolute top-[-30px] right-[-20px] w-52 h-52 rounded-full bg-white/5 pointer-events-none" />
-        <div className="max-w-3xl mx-auto relative z-10">
-          <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-3">Acceso Privado</h1>
-          <p className="text-edu-accent text-sm md:text-base max-w-xl mx-auto">
-            Ingresá al portal institucional para gestionar tu información, boletines y actividades
-          </p>
-        </div>
-      </section>
-
-      {/* Sección del Formulario de Ingreso */}
-      <section className="py-12 max-w-md mx-auto px-4">
-        <div className="bg-edu-card border border-slate-200/60 rounded-lg p-6 shadow-sm">
-          {isSuccess ? (
-            /* Vista de Éxito al autenticarse */
-            <div className="text-center py-8 space-y-4 animate-scaleUp">
-              <div className="w-16 h-16 bg-green-50 text-green-600 rounded-full flex items-center justify-center mx-auto shadow-sm">
-                <CheckCircle2 size={36} />
-              </div>
-              <h3 className="text-sm font-bold text-edu-dark">¡Ingreso exitoso!</h3>
-              <p className="text-xs text-slate-500 leading-relaxed max-w-xs mx-auto">
-                Bienvenido de nuevo al portal de{' '}
-                <strong>
-                  {userType === 'family' ? 'Familias y Alumnos' : 'Docentes y Directivos'}
-                </strong>
-                . Redirigiéndote a tu panel de control...
+    <div className="min-h-screen bg-[#f4efe6] text-slate-800">
+      <div className="grid min-h-screen lg:grid-cols-[1.05fr_0.95fr]">
+        <section className="hidden bg-[#0f52ba] px-14 py-12 text-white lg:flex lg:flex-col lg:justify-between">
+          <div className="space-y-5">
+            <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em]">
+              <Lock className="h-4 w-4" />
+              Acceso institucional
+            </span>
+            <div className="max-w-lg space-y-4 text-left">
+              <h1 className="text-4xl font-bold leading-tight">
+                Un login simple para probar los cuatro accesos del MVP.
+              </h1>
+              <p className="text-base leading-relaxed text-white/80">
+                Autoridades y alumnos siguen entrando con el backend real. Docentes
+                y familias usan cuentas demo locales para no tocar Spring Boot.
               </p>
-              <button
-                onClick={handleReset}
-                className="mt-2 text-xs text-edu-secondary hover:text-edu-primary font-semibold underline cursor-pointer"
-              >
-                Cerrar sesión de prueba
-              </button>
             </div>
-          ) : (
-            /* Formulario de Entrada Principal */
-            <form onSubmit={handleSubmit} className="space-y-5">
-              <h2 className="text-base font-bold text-edu-primary mb-2 pb-2 border-b border-edu-light uppercase tracking-wide flex items-center gap-2">
-                <LogIn size={18} />
-                <span>Ingresar al portal</span>
+          </div>
+
+          <div className="space-y-4">
+            {demoSteps.map((step, index) => (
+              <div
+                key={step}
+                className="flex items-start gap-3 rounded-2xl border border-white/10 bg-white/8 px-4 py-4 text-left backdrop-blur-sm"
+              >
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/12 text-sm font-bold">
+                  {index + 1}
+                </div>
+                <p className="text-sm leading-relaxed text-white/88">{step}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section className="flex items-center justify-center px-5 py-8 sm:px-8 lg:px-12">
+          <div className="w-full max-w-xl space-y-6">
+            <div className="space-y-3 text-left">
+              <span className="inline-flex items-center gap-2 rounded-full bg-[#0f52ba]/10 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.22em] text-[#0f52ba]">
+                <GraduationCap className="h-4 w-4" />
+                Portal Educar
+              </span>
+              <h2 className="text-3xl font-bold text-[#0f2d59]">
+                Ingresar al portal
               </h2>
+              <p className="max-w-2xl text-sm leading-relaxed text-slate-500">
+                El login se mantiene solo por correo y contrasena. No hay selector
+                de rol: el sistema resuelve cada acceso segun la cuenta usada.
+              </p>
+            </div>
 
-              {error && (
-                <div className="p-3 bg-red-50 border border-red-100 rounded text-[11px] text-red-600 flex items-center gap-2">
-                  <ShieldAlert size={14} className="shrink-0" />
-                  <span>{error}</span>
-                </div>
-              )}
-
-              {/* Conmutador de Tipo de Usuario (Roles interactivas) */}
-              <div className="space-y-1.5">
-                <label className="block text-[10px] font-semibold text-slate-600 uppercase tracking-wide">
-                  Tipo de usuario
-                </label>
-                <div className="flex gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setUserType('family')}
-                    className={`flex-1 py-2.5 rounded text-[10px] font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer border ${
-                      userType === 'family'
-                        ? 'bg-edu-primary border-edu-primary text-white shadow-sm'
-                        : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
-                    }`}
-                  >
-                    <Users size={12} />
-                    <span>FAMILIA / ALUMNO</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setUserType('staff')}
-                    className={`flex-1 py-2.5 rounded text-[10px] font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer border ${
-                      userType === 'staff'
-                        ? 'bg-edu-primary border-edu-primary text-white shadow-sm'
-                        : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
-                    }`}
-                  >
-                    <GraduationCap size={12} />
-                    <span>DOCENTE / DIRECTIVO</span>
-                  </button>
-                </div>
-              </div>
-
-              {/* Campo Usuario o Correo */}
-              <div className="space-y-1">
-                <label className="block text-[10px] font-semibold text-slate-600 uppercase tracking-wide">
-                  Usuario / Correo electrónico
-                </label>
-                <input
-                  type="text"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  placeholder="Ej: mi_usuario o correo@gmail.com"
-                  className="w-full h-9 px-3 border border-slate-200 rounded text-xs focus:outline-none focus:ring-1 focus:ring-edu-primary focus:border-edu-primary bg-white transition-all text-edu-dark"
-                  required
-                  disabled={isSubmitting}
-                />
-              </div>
-
-              {/* Campo Contraseña */}
-              <div className="space-y-1">
-                <label className="block text-[10px] font-semibold text-slate-600 uppercase tracking-wide">
-                  Contraseña
-                </label>
-                <input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  className="w-full h-9 px-3 border border-slate-200 rounded text-xs focus:outline-none focus:ring-1 focus:ring-edu-primary focus:border-edu-primary bg-white transition-all text-edu-dark"
-                  required
-                  disabled={isSubmitting}
-                />
-              </div>
-
-              {/* Recuperador de Contraseña */}
-              <div className="text-right">
-                <a
-                  href="#"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    alert('Funcionalidad de recuperación enviada a secretaría.');
+            <div className="grid gap-3 md:grid-cols-2">
+              {credentialCards.map((card) => (
+                <button
+                  key={card.title}
+                  type="button"
+                  onClick={() => {
+                    setEmail(card.email);
+                    setPassword(card.password);
+                    setError(null);
+                    setSuccessMessage(null);
                   }}
-                  className="text-[10px] text-edu-secondary hover:text-edu-primary transition-colors font-medium hover:underline"
+                  className="rounded-2xl border border-slate-200 bg-white px-4 py-4 text-left shadow-sm transition hover:-translate-y-0.5 hover:border-[#0f52ba]/30 hover:shadow-md"
                 >
-                  ¿Olvidaste tu contraseña?
-                </a>
+                  <p className="text-sm font-bold text-slate-800">{card.title}</p>
+                  <p className="mt-2 text-xs font-semibold text-[#0f52ba]">
+                    {card.email}
+                  </p>
+                  <p className="text-xs text-slate-500">{card.password}</p>
+                  <p className="mt-3 text-xs leading-relaxed text-slate-500">
+                    {card.note}
+                  </p>
+                </button>
+              ))}
+            </div>
+
+            {error && (
+              <div className="flex items-start gap-2 rounded-2xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-700">
+                <ShieldAlert className="mt-0.5 h-4 w-4 shrink-0" />
+                <span>{error}</span>
+              </div>
+            )}
+
+            {successMessage && (
+              <div className="flex items-start gap-2 rounded-2xl border border-green-100 bg-green-50 px-4 py-3 text-sm text-green-700">
+                <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" />
+                <span>{successMessage}</span>
+              </div>
+            )}
+
+            <form
+              onSubmit={handleSubmit}
+              className="space-y-4 rounded-[28px] border border-slate-200 bg-white p-6 shadow-[0_18px_60px_rgba(15,45,89,0.08)]"
+            >
+              <div className="space-y-1.5">
+                <label className="block text-[11px] font-bold uppercase tracking-[0.2em] text-slate-500">
+                  Correo electronico
+                </label>
+                <div className="relative">
+                  <Mail className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(event) => setEmail(event.target.value)}
+                    placeholder="director@educar.com"
+                    className="h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 pl-10 pr-4 text-sm text-slate-800 outline-none transition focus:border-[#0f52ba] focus:bg-white focus:ring-2 focus:ring-[#0f52ba]/15"
+                    disabled={isSubmitting}
+                    required
+                  />
+                </div>
               </div>
 
-              {/* Botón de envío con indicador Spinner de Carga */}
+              <div className="space-y-1.5">
+                <label className="block text-[11px] font-bold uppercase tracking-[0.2em] text-slate-500">
+                  Contrasena
+                </label>
+                <div className="relative">
+                  <KeyRound className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    value={password}
+                    onChange={(event) => setPassword(event.target.value)}
+                    placeholder="programacion2026"
+                    className="h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 pl-10 pr-12 text-sm text-slate-800 outline-none transition focus:border-[#0f52ba] focus:bg-white focus:ring-2 focus:ring-[#0f52ba]/15"
+                    disabled={isSubmitting}
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((current) => !current)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 transition hover:text-slate-600"
+                  >
+                    {showPassword ? (
+                      <EyeOff className="h-4 w-4" />
+                    ) : (
+                      <Eye className="h-4 w-4" />
+                    )}
+                  </button>
+                </div>
+              </div>
+
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full bg-edu-secondary hover:bg-edu-secondary/90 disabled:bg-edu-secondary/70 text-white font-bold text-xs py-3 rounded shadow-sm transition-all cursor-pointer uppercase tracking-wider flex items-center justify-center gap-2"
+                className="flex h-12 w-full items-center justify-center gap-2 rounded-2xl bg-[#0f52ba] text-sm font-semibold text-white transition hover:bg-[#0c449e] disabled:cursor-not-allowed disabled:opacity-70"
               >
                 {isSubmitting ? (
                   <>
-                    <svg className="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                    <svg
+                      className="h-4 w-4 animate-spin text-white"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      />
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                      />
                     </svg>
-                    <span>INGRESANDO...</span>
+                    Validando acceso...
                   </>
                 ) : (
-                  <span>INGRESAR AL PORTAL</span>
+                  <>
+                    <span>Iniciar sesion</span>
+                    <ArrowRight className="h-4 w-4" />
+                  </>
                 )}
               </button>
             </form>
-          )}
-        </div>
-      </section>
+
+            <div className="rounded-2xl border border-dashed border-slate-300 bg-white/65 px-4 py-4 text-left">
+              <div className="flex items-start gap-3">
+                <UserRoundPlus className="mt-0.5 h-5 w-5 shrink-0 text-[#0f52ba]" />
+                <div className="space-y-1">
+                  <p className="text-sm font-semibold text-slate-800">
+                    Registro controlado por autoridad
+                  </p>
+                  <p className="text-xs leading-relaxed text-slate-500">
+                    El alta real disponible sigue siendo la del alumno institucional
+                    con DNI
+                    <strong className="mx-1 text-slate-700">46463269</strong>.
+                    Docentes y familias estan cubiertos en este MVP con accesos
+                    demo locales para no forzar endpoints que el backend no expone.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
     </div>
   );
 };

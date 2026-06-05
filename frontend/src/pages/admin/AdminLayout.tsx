@@ -1,120 +1,129 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
-import { 
-  LayoutDashboard, 
-  Newspaper, 
-  PlusSquare, 
-  Settings, 
-  HelpCircle, 
-  LogOut, 
-  Menu, 
-  X, 
-  Bell 
+import {
+  ArrowLeft,
+  Bell,
+  ClipboardList,
+  HelpCircle,
+  LogOut,
+  Menu,
+  MessageSquareWarning,
+  Newspaper,
+  PlusSquare,
+  Settings,
+  X,
 } from 'lucide-react';
+import {
+  clearSession,
+  getRoleHomePath,
+  getSession,
+} from '../../features/auth/services/demoAuth';
 
 export const AdminLayout: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const session = getSession();
 
-  // Verify that the user is logged in as staff (simulation)
   useEffect(() => {
-    const role = localStorage.getItem('educar_user_role');
-    if (role !== 'staff') {
-      // If not logged in as staff, redirect to login page
+    if (!session) {
       navigate('/login');
+      return;
     }
-  }, [navigate]);
+
+    if (session.role !== 'authority') {
+      navigate(getRoleHomePath(session.role));
+    }
+  }, [navigate, session]);
 
   const handleLogout = () => {
-    localStorage.removeItem('educar_user_role');
+    clearSession();
     navigate('/login');
   };
 
   const navItems = [
     {
-      label: 'Dashboard',
-      icon: <LayoutDashboard size={20} />,
-      path: '/privado/noticias', // Redirect to news management for simplicity
-      disabled: true
+      label: 'Volver a la Web',
+      icon: <ArrowLeft size={20} />,
+      path: '/',
+    },
+    {
+      label: 'Solicitudes',
+      icon: <ClipboardList size={20} />,
+      path: '/privado/solicitudes',
+    },
+    {
+      label: 'Opiniones',
+      icon: <MessageSquareWarning size={20} />,
+      path: '/privado/opiniones',
     },
     {
       label: 'Noticias',
       icon: <Newspaper size={20} />,
-      path: '/privado/noticias'
+      path: '/privado/noticias',
     },
     {
       label: 'Crear Noticia',
       icon: <PlusSquare size={20} />,
-      path: '/privado/crear-noticia'
-    }
+      path: '/privado/crear-noticia',
+    },
+    {
+      label: 'Alta Alumno Demo',
+      icon: <PlusSquare size={20} />,
+      path: '/privado/crear-usuario',
+    },
   ];
 
   const bottomItems = [
     {
       label: 'Ajustes',
       icon: <Settings size={18} />,
-      onClick: () => alert('Ajustes del portal (simulación)')
+      onClick: () => alert('Ajustes institucionales en construccion.'),
     },
     {
       label: 'Ayuda',
       icon: <HelpCircle size={18} />,
-      onClick: () => alert('Centro de ayuda institucional')
-    }
+      onClick: () => alert('Centro de ayuda institucional.'),
+    },
   ];
 
-  // Detect active route
-  const isActive = (path: string) => {
-    return location.pathname === path;
-  };
+  const isActive = (path: string) => location.pathname === path;
 
-  // Get current page title based on route
   const getPageTitle = () => {
-    if (location.pathname === '/privado/noticias') return 'Gestión de Noticias';
+    if (location.pathname === '/privado/solicitudes') return 'Solicitudes de Inscripcion';
+    if (location.pathname === '/privado/opiniones') return 'Moderacion de Opiniones';
+    if (location.pathname === '/privado/noticias') return 'Gestion de Noticias';
     if (location.pathname === '/privado/crear-noticia') return 'Crear Noticia';
+    if (location.pathname === '/privado/crear-usuario') return 'Alta de Alumno Demo';
     if (location.pathname.startsWith('/privado/editar-noticia')) return 'Editar Noticia';
-    return 'Panel de Control';
+    return 'Panel Institucional';
   };
 
   return (
-    <div className="min-h-screen flex bg-slate-50 font-sans text-slate-800">
-      
-      {/* Sidebar for Desktop */}
-      <aside className="hidden md:flex flex-col w-64 bg-white border-r border-slate-200/80 fixed h-screen z-30 shadow-[4px_0_24px_rgba(26,82,118,0.03)]">
-        {/* Logo Section */}
-        <div className="p-6 border-b border-slate-100 flex items-center gap-3">
+    <div className="flex min-h-screen bg-slate-50 font-sans text-slate-800">
+      <aside className="fixed z-30 hidden h-screen w-64 flex-col border-r border-slate-200/80 bg-white shadow-[4px_0_24px_rgba(26,82,118,0.03)] md:flex">
+        <div className="flex items-center gap-3 border-b border-slate-100 p-6">
           <span className="text-2xl">🎓</span>
           <div>
-            <h1 className="font-bold text-edu-primary tracking-tight leading-none text-base">Educar Admin</h1>
-            <span className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">Acceso Privado</span>
+            <h1 className="text-base font-bold leading-none tracking-tight text-edu-primary">
+              Educar Institucional
+            </h1>
+            <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+              Autoridades y personal
+            </span>
           </div>
         </div>
 
-        {/* Nav Links */}
-        <nav className="flex-1 px-4 py-6 space-y-1.5">
-          {navItems.map((item, idx) => {
-            if (item.disabled) {
-              return (
-                <div
-                  key={idx}
-                  className="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-400 text-xs font-semibold uppercase tracking-wider cursor-not-allowed opacity-60"
-                  title="Dashboard simplificado en Gestión de Noticias"
-                >
-                  {item.icon}
-                  <span>{item.label}</span>
-                  <span className="ml-auto text-[9px] bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded-full font-bold">MOCK</span>
-                </div>
-              );
-            }
-
+        <nav className="flex-1 space-y-1.5 px-4 py-6">
+          {navItems.map((item) => {
             const active = isActive(item.path);
             return (
               <Link
-                key={idx}
+                key={item.path}
                 to={item.path}
-                className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-semibold transition-all duration-200 cursor-pointer ${
+                className={`flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-semibold transition-all duration-200 ${
                   active
-                    ? 'bg-edu-secondary/10 text-edu-primary border-r-4 border-edu-secondary'
+                    ? 'border-r-4 border-edu-secondary bg-edu-secondary/10 text-edu-primary'
                     : 'text-slate-500 hover:bg-slate-50 hover:text-edu-secondary'
                 }`}
               >
@@ -127,13 +136,12 @@ export const AdminLayout: React.FC = () => {
           })}
         </nav>
 
-        {/* Bottom Actions */}
-        <div className="p-4 border-t border-slate-100 space-y-1">
-          {bottomItems.map((item, idx) => (
+        <div className="space-y-1 border-t border-slate-100 p-4">
+          {bottomItems.map((item) => (
             <button
-              key={idx}
+              key={item.label}
               onClick={item.onClick}
-              className="w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-xs font-bold text-slate-500 hover:bg-slate-50 hover:text-edu-secondary transition-colors cursor-pointer text-left"
+              className="flex w-full cursor-pointer items-center gap-3 rounded-lg px-4 py-2.5 text-left text-xs font-bold text-slate-500 transition-colors hover:bg-slate-50 hover:text-edu-secondary"
             >
               <div className="text-slate-400">{item.icon}</div>
               <span>{item.label}</span>
@@ -141,64 +149,57 @@ export const AdminLayout: React.FC = () => {
           ))}
           <button
             onClick={handleLogout}
-            className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-xs font-bold text-red-600 hover:bg-red-50 transition-colors cursor-pointer text-left mt-2 border-t border-dashed border-slate-100 pt-3"
+            className="mt-2 flex w-full cursor-pointer items-center gap-3 border-t border-dashed border-slate-100 px-4 pt-3 text-left text-xs font-bold text-red-600 transition-colors hover:bg-red-50"
           >
             <LogOut size={18} className="text-red-500" />
-            <span>CERRAR SESIÓN</span>
+            <span>CERRAR SESION</span>
           </button>
         </div>
       </aside>
 
-      {/* Mobile Drawer menu backdrop */}
       {isMobileMenuOpen && (
-        <div 
-          className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 md:hidden"
+        <div
+          className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm md:hidden"
           onClick={() => setIsMobileMenuOpen(false)}
         />
       )}
 
-      {/* Sidebar for Mobile (Drawer) */}
-      <aside className={`fixed inset-y-0 left-0 w-64 bg-white z-50 flex flex-col transform transition-transform duration-300 md:hidden shadow-2xl ${
-        isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
-      }`}>
-        <div className="p-6 border-b border-slate-100 flex items-center justify-between">
+      <aside
+        className={`fixed inset-y-0 left-0 z-50 flex w-64 flex-col bg-white shadow-2xl transition-transform duration-300 md:hidden ${
+          isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}
+      >
+        <div className="flex items-center justify-between border-b border-slate-100 p-6">
           <div className="flex items-center gap-3">
             <span className="text-2xl">🎓</span>
             <div>
-              <h1 className="font-bold text-edu-primary tracking-tight leading-none text-base">Educar Admin</h1>
-              <span className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">Acceso Privado</span>
+              <h1 className="text-base font-bold leading-none tracking-tight text-edu-primary">
+                Educar Institucional
+              </h1>
+              <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+                Autoridades y personal
+              </span>
             </div>
           </div>
-          <button 
+          <button
             onClick={() => setIsMobileMenuOpen(false)}
-            className="p-1 rounded-full text-slate-500 hover:bg-slate-100 cursor-pointer"
+            className="cursor-pointer rounded-full p-1 text-slate-500 hover:bg-slate-100"
           >
             <X size={20} />
           </button>
         </div>
 
-        <nav className="flex-1 px-4 py-6 space-y-1.5">
-          {navItems.map((item, idx) => {
-            if (item.disabled) {
-              return (
-                <div
-                  key={idx}
-                  className="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-400 text-xs font-semibold uppercase tracking-wider opacity-60"
-                >
-                  {item.icon}
-                  <span>{item.label}</span>
-                </div>
-              );
-            }
+        <nav className="flex-1 space-y-1.5 px-4 py-6">
+          {navItems.map((item) => {
             const active = isActive(item.path);
             return (
               <Link
-                key={idx}
+                key={item.path}
                 to={item.path}
                 onClick={() => setIsMobileMenuOpen(false)}
-                className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-semibold transition-all duration-200 ${
+                className={`flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-semibold transition-all duration-200 ${
                   active
-                    ? 'bg-edu-secondary/10 text-edu-primary border-r-4 border-edu-secondary'
+                    ? 'border-r-4 border-edu-secondary bg-edu-secondary/10 text-edu-primary'
                     : 'text-slate-500 hover:bg-slate-50 hover:text-edu-secondary'
                 }`}
               >
@@ -211,15 +212,15 @@ export const AdminLayout: React.FC = () => {
           })}
         </nav>
 
-        <div className="p-4 border-t border-slate-100 space-y-1">
-          {bottomItems.map((item, idx) => (
+        <div className="space-y-1 border-t border-slate-100 p-4">
+          {bottomItems.map((item) => (
             <button
-              key={idx}
+              key={item.label}
               onClick={() => {
                 setIsMobileMenuOpen(false);
                 item.onClick();
               }}
-              className="w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-xs font-bold text-slate-500 hover:bg-slate-50 hover:text-edu-secondary transition-colors cursor-pointer text-left"
+              className="flex w-full cursor-pointer items-center gap-3 rounded-lg px-4 py-2.5 text-left text-xs font-bold text-slate-500 transition-colors hover:bg-slate-50 hover:text-edu-secondary"
             >
               <div className="text-slate-400">{item.icon}</div>
               <span>{item.label}</span>
@@ -230,59 +231,54 @@ export const AdminLayout: React.FC = () => {
               setIsMobileMenuOpen(false);
               handleLogout();
             }}
-            className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-xs font-bold text-red-600 hover:bg-red-50 transition-colors cursor-pointer text-left mt-2 border-t border-dashed border-slate-100 pt-3"
+            className="mt-2 flex w-full cursor-pointer items-center gap-3 border-t border-dashed border-slate-100 px-4 pt-3 text-left text-xs font-bold text-red-600 transition-colors hover:bg-red-50"
           >
             <LogOut size={18} className="text-red-500" />
-            <span>CERRAR SESIÓN</span>
+            <span>CERRAR SESION</span>
           </button>
         </div>
       </aside>
 
-      {/* Main Content Area */}
-      <div className="flex-1 flex flex-col md:pl-64 min-w-0">
-        
-        {/* Sticky Top Bar */}
-        <header className="bg-white/80 backdrop-blur-md sticky top-0 z-20 border-b border-slate-200/60 flex justify-between items-center h-16 px-6 shadow-[0_2px_12px_rgba(0,0,0,0.02)]">
+      <div className="flex min-w-0 flex-1 flex-col md:pl-64">
+        <header className="sticky top-0 z-20 flex h-16 items-center justify-between border-b border-slate-200/60 bg-white/80 px-6 shadow-[0_2px_12px_rgba(0,0,0,0.02)] backdrop-blur-md">
           <div className="flex items-center gap-4">
-            <button 
+            <button
               onClick={() => setIsMobileMenuOpen(true)}
-              className="md:hidden p-1.5 text-slate-500 hover:bg-slate-100 rounded-lg cursor-pointer"
+              className="cursor-pointer rounded-lg p-1.5 text-slate-500 hover:bg-slate-100 md:hidden"
             >
               <Menu size={22} />
             </button>
-            <h2 className="text-base md:text-lg font-bold text-edu-primary tracking-tight">
+            <h2 className="text-base font-bold tracking-tight text-edu-primary md:text-lg">
               {getPageTitle()}
             </h2>
           </div>
 
           <div className="flex items-center gap-4">
-            {/* Notifications Button */}
-            <button className="p-2 text-slate-400 hover:text-edu-secondary hover:bg-slate-50 rounded-full transition-all cursor-pointer relative">
+            <button className="relative cursor-pointer rounded-full p-2 text-slate-400 transition-all hover:bg-slate-50 hover:text-edu-secondary">
               <Bell size={18} />
-              <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-edu-secondary rounded-full" />
+              <span className="absolute right-1.5 top-1.5 h-1.5 w-1.5 rounded-full bg-edu-secondary" />
             </button>
 
-            {/* Profile Info */}
             <div className="flex items-center gap-2 border-l border-slate-200 pl-4">
-              <div className="w-8 h-8 rounded-full bg-edu-primary text-white flex items-center justify-center font-bold text-xs shadow-sm">
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-edu-primary text-xs font-bold text-white shadow-sm">
                 DD
               </div>
-              <div className="hidden sm:block text-left">
-                <p className="text-xs font-bold leading-none text-slate-700">Claudio Iván</p>
-                <p className="text-[9px] font-bold text-edu-secondary uppercase tracking-wider mt-0.5">
-                  {localStorage.getItem('educar_user_role') === 'staff' ? 'Docente/Directivo' : 'Invitado'}
+              <div className="hidden text-left sm:block">
+                <p className="text-xs font-bold leading-none text-slate-700">
+                  {session?.name ?? 'Director Demo'}
+                </p>
+                <p className="mt-0.5 text-[9px] font-bold uppercase tracking-wider text-edu-secondary">
+                  Autoridad
                 </p>
               </div>
             </div>
           </div>
         </header>
 
-        {/* Dynamic content rendering */}
-        <main className="flex-grow p-4 md:p-8 max-w-7xl mx-auto w-full">
+        <main className="mx-auto w-full max-w-7xl flex-grow p-4 md:p-8">
           <Outlet />
         </main>
       </div>
-
     </div>
   );
 };

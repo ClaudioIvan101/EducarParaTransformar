@@ -8,26 +8,33 @@ import {
   LogOut, 
   PlusCircle, 
   Menu, 
-  X
+  X,
+  ArrowLeft
 } from 'lucide-react';
 import { forumStore } from '../../features/comunidad/services/forumStore';
+import { clearSession, getRoleHomePath, getSession } from '../../features/auth/services/demoAuth';
 
 export const ForoLayout: React.FC = () => {
   const navigate = useNavigate();
+  const session = getSession();
   const [profile] = useState(forumStore.getProfile());
   const [searchQuery, setSearchQuery] = useState('');
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
-    const role = localStorage.getItem('educar_user_role');
-    if (!role) {
+    if (!session) {
       navigate('/login');
+      return;
     }
-  }, [navigate]);
+
+    if (session.role !== 'student') {
+      navigate(getRoleHomePath(session.role));
+    }
+  }, [navigate, session]);
 
   const handleLogout = () => {
-    localStorage.removeItem('educar_user_role');
+    clearSession();
     navigate('/login');
   };
 
@@ -39,6 +46,7 @@ export const ForoLayout: React.FC = () => {
   };
 
   const navLinks = [
+    { label: 'Volver a la Web', path: '/' },
     { label: 'Académico', path: '/privado/foro?category=Académico' },
     { label: 'Vida Escolar', path: '/privado/foro?category=Vida Escolar' },
     { label: 'Grupos de Estudio', path: '/privado/foro?category=Grupos de Estudio' },
@@ -124,6 +132,14 @@ export const ForoLayout: React.FC = () => {
                       <p className="text-xs font-bold text-slate-700 truncate">{profile.name}</p>
                       <p className="text-[9px] font-bold text-slate-400 uppercase tracking-wide truncate mt-0.5">Reputación: {profile.reputation}</p>
                     </div>
+                    <Link
+                      to="/"
+                      onClick={() => setShowProfileMenu(false)}
+                      className="flex items-center gap-2 px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-50 hover:text-edu-primary transition-colors"
+                    >
+                      <ArrowLeft size={14} />
+                      <span>Volver a la Web</span>
+                    </Link>
                     <Link
                       to="/privado/foro/perfil"
                       onClick={() => setShowProfileMenu(false)}

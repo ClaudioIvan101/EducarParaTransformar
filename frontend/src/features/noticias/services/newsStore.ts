@@ -1,3 +1,9 @@
+import schoolInnovationNews from '../../../assets/service/school_innovation_news.png';
+import biotechLabNews from '../../../assets/service/biotech_lab_news.png';
+import studentMentorshipNews from '../../../assets/service/student_mentorship_news.png';
+import basketballVictoryNews from '../../../assets/service/basketball_victory_news.png';
+import schoolScienceFair from '../../../assets/service/school_science_fair.png';
+
 export interface Article {
   id: number;
   category: 'Institucional' | 'Académico' | 'Comunidad' | 'Deportes' | 'Eventos';
@@ -21,7 +27,7 @@ const DEFAULT_ARTICLES: Article[] = [
     date: '15 de Octubre, 2025',
     author: 'Lic. Mariana Costa',
     readTime: '4 min',
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAolELDqPV1aSlQ2l7gfz5KwFnufjOO-p9DUHYjrr-wmzNbltqAOI_67iH2YwdgL91mUg-9hpIBdptmaPvBniZjRDF2opVA7I1NxMB0JBX6gv1W3x8-oN4mClzkPR7bpRY7BOWWZ2bbfYiS3KA978Xbdi0jTuJNZFTYrNOLYjcJwCAU0PNrEIphQBTMuDrThzR75c1DiGwKQRPtxQ1rQu9zH1U77GXeZYyaStOC0zNfKQ80wMJx34ll7HBNhOAuCsWyyPvqnPZbJBU',
+    image: schoolInnovationNews,
     lead: 'Nuestra institución proyecta un modelo educativo renovado que integra tecnologías inmersivas y metodologías activas para potenciar las competencias del siglo XXI en todos los niveles.',
     content: [
       'El nuevo plan curricular marca un hito en la colaboración educativa, integrando herramientas digitales que permiten a los estudiantes interactuar de manera activa con el conocimiento, pasando de receptores pasivos a creadores y pensadores críticos.',
@@ -43,7 +49,7 @@ const DEFAULT_ARTICLES: Article[] = [
     date: '12 de Octubre, 2025',
     author: 'Dr. Carlos Altieri',
     readTime: '5 min',
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXu9J77rSG3_v_ge2iH7bYLm2rGyyh5zrstK8TrTRyYTnefGTPrZQbg60W9U8QDo0xhQu2u9Nr01phVZw-gN70-0XQ80ARjX9A8_6x4mF8CC_3Fer5tINnhzm7pL4YcuPLoJAle0VsXoWAwM915pTQL6pS01ijjQEHv_durDiWMCPFHLydM5Ogc6vgZozcSoHaI0Gpin-VPRy5X4P91LTVwFlo2pofPm-G8BlLunhkmGWo0whh6Rp1x21tqL9aPsI-yRdW5cK3_5S_I',
+    image: biotechLabNews,
     lead: 'Estudiantes de nivel secundario, guiados por investigadores locales, desarrollan un prototipo de purificación de agua de bajo costo utilizando filtros basados en nanomateriales ecológicos.',
     content: [
       'A través del taller de Ciencias Experimentales, se ha completado la primera fase de pruebas de laboratorio de filtros compuestos por biopolímeros obtenidos de residuos agrícolas. Este desarrollo abre una puerta a soluciones comunitarias ante problemáticas ambientales locales.',
@@ -63,7 +69,7 @@ const DEFAULT_ARTICLES: Article[] = [
     date: '10 de Octubre, 2025',
     author: 'Lic. Sofía Rivas',
     readTime: '3 min',
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuD5qTbkK2CX9esDx_6EUyj2K5V3IbnLCZDWMMt2sIpGevyb2H1G9LfmS020l4G8qiNjSm-vNGUxFBeCwHZQQohMmGiyO7bZ-wbGaT60b4ON3792luCvDbP0S6PtEWzND-LJqUjk6aQcqfLBnXv3e5breY_s3WamakZEsTBThdI08wfS3u5uRrT6jcznfSwNDXBDnm4VpLpxcnLbzufgqJLW7VlPDByHVx1cTbZLDH0Kx81Y3KFNo83B4Crc2HzQkH0BkjVgvFSjVak',
+    image: studentMentorshipNews,
     lead: 'La iniciativa de acompañamiento entre pares consolida su rol clave para facilitar la transición escolar y fortalecer los lazos de convivencia en Educar Para Transformar.',
     content: [
       'El programa vincula a alumnos mayores con ingresantes o estudiantes que necesitan apoyo. Esta contención emocional y académica no solo mejora el rendimiento sino que crea redes profundas de empatía y cuidado mutuo en toda la comunidad educativa.',
@@ -83,7 +89,7 @@ const DEFAULT_ARTICLES: Article[] = [
     date: '08 de Octubre, 2025',
     author: 'Prof. Lucas Almada',
     readTime: '3 min',
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBpLc0wNKFNuR2CXukJKP-2C3ThTPErMh62Ibp-rcH4UycvUp544FVEmiqt9ZcB1J4GPuLGxTTL8CZ5b18093aaP3kpZZdsqrbndxkpqt_V0HJbPbaneBUhET8z6K6QQhkZcQ6ENtZSG2kjp1L57r1xbaMXSjjesplmeA-zSIEZHZKlEU1UFI3eDWQPEc5Og0ifo9KwkfLCkdEXJm6pcyaqLlEi3hsB0Gh5YBka3s0tPUzLxEyDhCcye3CqXpWj5JLHNak07Nvm370',
+    image: basketballVictoryNews,
     lead: 'Nuestros deportistas se coronaron campeones del certamen regional tras una final emocionante disputada en el estadio principal del polideportivo municipal.',
     content: [
       'En un final para el infarto, el equipo de básquetbol masculino se impuso por 78 a 76. La constancia, el juego en equipo y el apoyo incondicional de los alumnos en las tribunas impulsaron la victoria en los segundos finales del encuentro.',
@@ -103,7 +109,7 @@ const DEFAULT_ARTICLES: Article[] = [
     date: '05 de Octubre, 2025',
     author: 'Coordinación General',
     readTime: '4 min',
-    image: 'https://images.unsplash.com/photo-1511578314322-379afb476865?q=80&w=1200',
+    image: schoolScienceFair,
     lead: 'La institución abrió sus puertas a la comunidad en un evento inolvidable donde las aulas cobraron vida exponiendo los proyectos transversales e instalaciones artísticas de los estudiantes.',
     content: [
       'Con una concurrencia que superó las 600 personas entre familias y vecinos, se desarrolló la Muestra Anual. Los pasillos y patios de Educar Para Transformar se llenaron de color, música, experimentos interactivos y exposiciones pedagógicas.',
@@ -128,7 +134,25 @@ export const newsStore = {
       return DEFAULT_ARTICLES;
     }
     try {
-      return JSON.parse(data);
+      const parsed: Article[] = JSON.parse(data);
+      
+      // Auto-migrate old images to new unique generated ones
+      let needsMigration = false;
+      const migrated = parsed.map(article => {
+        const defaultArt = DEFAULT_ARTICLES.find(d => d.id === article.id);
+        if (defaultArt && article.image !== defaultArt.image) {
+          needsMigration = true;
+          return { ...article, image: defaultArt.image };
+        }
+        return article;
+      });
+
+      if (needsMigration) {
+        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(migrated));
+        return migrated;
+      }
+      
+      return parsed;
     } catch {
       return DEFAULT_ARTICLES;
     }

@@ -6,6 +6,7 @@ import { FluidStackSection } from './components/FluidStackSection';
 import { CommunitySection } from './components/CommunitySection';
 import { ContactSection } from './components/ContactSection';
 import { TestimonialsSection } from './components/TestimonialsSection';
+import { EnrollmentInviteSection } from './components/EnrollmentInviteSection';
 import { MessageCircle } from 'lucide-react';
 import { FadeInSection } from '../../shared/components/FadeInSection';
 
@@ -30,6 +31,10 @@ export const HomePage: React.FC = () => {
 
       <FadeInSection direction="up">
         <CommunitySection />
+      </FadeInSection>
+
+      <FadeInSection direction="up">
+        <EnrollmentInviteSection />
       </FadeInSection>
       
       <FadeInSection direction="up">
