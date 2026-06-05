@@ -4,9 +4,9 @@ export const IntroSection: React.FC = () => {
   return (
     <section className="pt-16 md:pt-24 pb-8 px-6 relative overflow-hidden">
       <div className="max-w-5xl mx-auto text-center">
-        <div className="inline-block px-4 py-1.5 mb-6 text-xs font-semibold tracking-wider text-edu-primary uppercase bg-blue-50 rounded-full">
+        <h2 className="text-3xl md:text-5xl font-bold text-edu-dark tracking-tight mb-6">
           Nuestra Visión
-        </div>
+        </h2>
         
         <p className="text-xl md:text-3xl text-gray-800 leading-snug font-medium max-w-4xl mx-auto balance-text">
           "Impulsamos el <span className="text-edu-primary">conocimiento</span>, la <span className="text-edu-primary">creatividad</span> y la <span className="text-edu-primary">innovación</span> a través de una educación integral en todos nuestros niveles."

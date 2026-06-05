@@ -1,9 +1,13 @@
 package com.transformarparaeducar.api_tfi.domain.person.core.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import com.transformarparaeducar.api_tfi.domain.user.core.model.User;
+import com.transformarparaeducar.api_tfi.domain.user.core.model.UserRole;
+import jakarta.persistence.*;
 import lombok.Getter;
+
+import java.time.LocalDate;
+import java.util.Date;
+import java.util.List;
 
 @Entity
 @Getter
@@ -21,23 +25,32 @@ public class Student extends Person {
     @Column(name = "division")
     private String division;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "nivel_educativo", nullable = false)
+    private EducationalLevel educationalLevel;
+
 
     public Student() {}
 
     public Student(String firstName, String lastName, String email,
-                   Long dni, java.util.Date birthDate, java.util.List<String> phoneNumbers,
-                   com.transformarparaeducar.api_tfi.domain.user.core.model.User user) {
-        super(null, firstName, lastName, email, dni, birthDate, phoneNumbers, user);
+                   Long dni, LocalDate birthDate, List<String> phoneNumbers) {
+        super(firstName, lastName, email, dni, birthDate, phoneNumbers);
     }
 
     public Student(String firstName, String lastName, String email,
-                   Long dni, java.util.Date birthDate, java.util.List<String> phoneNumbers,
-                   com.transformarparaeducar.api_tfi.domain.user.core.model.User user,
-                   String fileNumber, Integer yearOfEnrollment, String schoolYear, String division) {
-        super(null, firstName, lastName, email, dni, birthDate, phoneNumbers, user);
-        this.fileNumber = fileNumber;
-        this.yearOfEnrollment = yearOfEnrollment;
+                   Long dni, LocalDate birthDate, List<String> phoneNumbers,
+                   String schoolYear, String division) {
+        super(firstName, lastName, email, dni, birthDate, phoneNumbers);
+        this.fileNumber = generateFileNumber();
+        this.yearOfEnrollment = java.time.Year.now().getValue();
         this.schoolYear = schoolYear;
         this.division = division;
+    }
+
+    private String generateFileNumber() {
+        // Genera un legajo único basado en el DNI y el año de ingreso
+        String dniPart = String.valueOf(getDni()).substring(0, 6); // Últimos 6 dígitos del DNI
+        String yearPart = String.valueOf(yearOfEnrollment);
+        return "EST-" + dniPart + "-" + yearPart;
     }
 }

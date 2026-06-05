@@ -6,5 +6,5 @@ import com.transformarparaeducar.api_tfi.domain.user.core.model.UserIdentifier;
 import java.sql.SQLException;
 
 public interface AddNewUser {
-    UserIdentifier handle(AddUserDTO addUserDTO) throws SQLException;
+    UserIdentifier handle(AddUserDTO addUserDTO);
 }

@@ -1,4 +1,4 @@
-package com.transformarparaeducar.api_tfi.domain.user.infrastructure;
+package com.transformarparaeducar.api_tfi.domain.user.infrastructure.persistence;
 
 import com.transformarparaeducar.api_tfi.domain.user.application.dto.GetUserDTO;
 import com.transformarparaeducar.api_tfi.domain.user.core.model.User;
@@ -7,7 +7,6 @@ import com.transformarparaeducar.api_tfi.domain.user.core.ports.outgoing.UserDat
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.sql.SQLException;
 import java.util.Optional;
 
 @RequiredArgsConstructor

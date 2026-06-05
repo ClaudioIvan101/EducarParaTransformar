@@ -10,6 +10,8 @@
   --color-edu-bg: #fafaf9;
   
   --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-serif: 'Source Serif 4', Georgia, serif;
+  --font-hanken: 'Hanken Grotesk', 'Inter', system-ui, sans-serif;
 }
 
 @layer base {

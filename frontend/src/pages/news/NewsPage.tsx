@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import { Search, Calendar, User, Clock, ArrowLeft, ChevronRight } from 'lucide-react';
 import imagenHero from '../../assets/service/hero-noticias.jpg';
 
@@ -18,57 +18,14 @@ interface Article {
   inlineImages?: string[];
 }
 
-// COMPONENTE ENVOLVENTE: CONTROL TOTAL DEL TIEMPO SIN DEPENDER DE TAILWIND
-const ScrollReveal: React.FC<{ children: React.ReactNode; durationMs?: number; delayMs?: number }> = ({ 
-  children, 
-  durationMs = 2000, 
-  delayMs = 0        
-}) => {
-  const [isIntersecting, setIsIntersecting] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsIntersecting(true);
-          if (ref.current) observer.unobserve(ref.current);
-        }
-      },
-      { 
-        rootMargin: '-60px 0px -60px 0px', 
-        threshold: 0.05 
-      }
-    );
-
-    if (ref.current) {
-      observer.observe(ref.current);
-    }
-
-    return () => observer.disconnect();
-  }, []);
-
-  return (
-    <div
-      ref={ref}
-      style={{
-        transitionProperty: 'all',
-        transitionTimingFunction: 'cubic-bezier(0.25, 1, 0.5, 1)', 
-        transitionDuration: `${durationMs}ms`,
-        transitionDelay: `${delayMs}ms`,
-      }}
-      className={`transform ${
-        isIntersecting 
-          ? 'opacity-100 translate-y-0' 
-          : 'opacity-0 translate-y-24' 
-      }`}
-    >
-      {children}
-    </div>
-  );
-};
-
+/**
+ * Portal de Noticias y Novedades.
+ * Proporciona una interfaz editorial premium que emula la estética de un portal de noticias universitario clásico,
+ * permitiendo búsqueda en tiempo real, filtrado por categorías institucionales, paginación,
+ * y visualización interactiva del detalle de cada noticia de forma dinámica.
+ */
 export const NewsPage: React.FC = () => {
+  // Catálogo completo de artículos institucionales y académicos reales
   const newsArticles: Article[] = [
     {
       id: 1,
@@ -85,7 +42,7 @@ export const NewsPage: React.FC = () => {
         'El método de aprendizaje basado en proyectos (ABP) se ha consolidado en las aulas de nivel primario y secundario, logrando resultados extraordinarios en la resolución de problemas reales y el desarrollo del pensamiento científico.',
         'La siguiente fase incluye la inauguración de aulas maker totalmente equipadas con impresoras 3D y kits de robótica, y la digitalización de los procesos de evaluación para un seguimiento personalizado del rendimiento escolar.'
       ],
-      blockquote: 'Nuestro compromiso es formar líderes creativos y con valores sólidos, capaces de influir de manera positiva en communities y enfrentar un mundo en constante cambio.',
+      blockquote: 'Nuestro compromiso es formar líderes creativos y con valores sólidos, capaces de influir de manera positiva en sus comunidades y enfrentar un mundo en constante cambio.',
       isFeatured: true,
       inlineImages: [
         'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=600',
@@ -174,13 +131,16 @@ export const NewsPage: React.FC = () => {
     }
   ];
 
+  // Estados reactivos locales de filtrado, búsqueda, paginación y navegación interna
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('Todas');
   const [selectedArticleId, setSelectedArticleId] = useState<number | null>(null);
   const [activePage, setActivePage] = useState(1);
 
+  // Categorías de visualización en la cabecera
   const categories = ['Todas', 'Institucional', 'Académico', 'Comunidad', 'Deportes', 'Eventos'];
 
+  // Filtrado reactivo bimodal en base a barra de búsqueda y categorías seleccionadas
   const filteredArticles = newsArticles.filter((article) => {
     const matchesSearch = article.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
                           article.lead.toLowerCase().includes(searchQuery.toLowerCase());
@@ -188,9 +148,11 @@ export const NewsPage: React.FC = () => {
     return matchesSearch && matchesCategory;
   });
 
+  // Segregación de artículos entre destacado y la grilla general
   const featuredNews = filteredArticles.find((article) => article.isFeatured);
   const regularNews = filteredArticles.filter((article) => !article.isFeatured);
 
+  // Manejo fluido de las transiciones de navegación
   const handleArticleClick = (id: number) => {
     setSelectedArticleId(id);
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -201,20 +163,14 @@ export const NewsPage: React.FC = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  // Renderizado del detalle de una noticia específica
   if (selectedArticleId !== null) {
     const article = newsArticles.find((a) => a.id === selectedArticleId);
     if (!article) return null;
 
     return (
-      <div className="max-w-7xl mx-auto px-4 py-8 animate-page-fade font-sans">
-         <style>{`
-          @keyframes pageFadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-          }
-          .animate-page-fade { animation: pageFadeIn 1s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
-        `}</style>
-
+      <div className="max-w-7xl mx-auto px-4 py-8 animate-fadeIn font-sans">
+        {/* Botón de retroceso al listado */}
         <button
           onClick={handleBackToList}
           className="inline-flex items-center gap-2 text-edu-primary text-xs font-bold uppercase mb-8 hover:text-edu-secondary transition-colors group cursor-pointer"
@@ -223,6 +179,7 @@ export const NewsPage: React.FC = () => {
           <span>Volver al listado</span>
         </button>
 
+        {/* Encabezado del Artículo */}
         <header className="mb-10 max-w-4xl mx-auto text-center">
           <div className="inline-block bg-edu-secondary/15 text-edu-primary px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider mb-4">
             {article.category}
@@ -248,6 +205,7 @@ export const NewsPage: React.FC = () => {
           </div>
         </header>
 
+        {/* Imagen Destacada del Artículo */}
         <figure className="mb-12 max-w-5xl mx-auto overflow-hidden rounded-2xl shadow-lg border border-slate-100">
           <img
             src={article.image}
@@ -256,6 +214,7 @@ export const NewsPage: React.FC = () => {
           />
         </figure>
 
+        {/* Cuerpo / Contenido del Artículo */}
         <article className="max-w-3xl mx-auto text-slate-700 text-base md:text-lg leading-relaxed space-y-6">
           <p className="text-xl md:text-2xl text-edu-primary font-medium leading-relaxed">
             {article.lead}
@@ -265,12 +224,14 @@ export const NewsPage: React.FC = () => {
             <React.Fragment key={index}>
               <p>{paragraph}</p>
               
+              {/* Inserción estética de la cita en el primer párrafo */}
               {index === 0 && article.blockquote && (
                 <blockquote className="border-l-4 border-edu-secondary bg-slate-50 p-6 md:p-8 my-8 italic text-lg md:text-xl text-edu-primary rounded-r-xl">
                   "{article.blockquote}"
                 </blockquote>
               )}
 
+              {/* Inserción estética de imágenes de galería en el segundo párrafo */}
               {index === 1 && article.inlineImages && article.inlineImages.length > 0 && (
                 <div className="grid grid-cols-2 gap-4 my-8">
                   {article.inlineImages.map((img, idx) => (
@@ -287,11 +248,13 @@ export const NewsPage: React.FC = () => {
           ))}
         </article>
 
+        {/* Divisor Separador */}
         <hr className="border-t border-slate-200 my-16 max-w-5xl mx-auto" />
 
+        {/* Sección de Artículos Relacionados */}
         <section className="max-w-5xl mx-auto">
           <div className="flex items-center justify-between mb-8">
-            <h3 className="text-2xl extra-bold text-edu-dark">Noticias Relacionadas</h3>
+            <h3 className="text-2xl font-bold text-edu-dark">Noticias Relacionadas</h3>
             <button
               onClick={handleBackToList}
               className="text-edu-secondary text-xs font-bold uppercase hover:text-edu-primary transition-all hover:underline"
@@ -337,24 +300,15 @@ export const NewsPage: React.FC = () => {
     );
   }
 
+  // Renderizado del listado principal (Portal de Noticias)
   return (
-    <div className="animate-page-fade font-sans">
-      <style>{`
-        @keyframes pageFadeIn {
-          from { opacity: 0; }
-          to { opacity: 1; }
-        }
-        .animate-page-fade { animation: pageFadeIn 1s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
-      `}</style>
-
-      <section className="bg-gradient-to-br from-edu-primary to-edu-secondary text-white py-16 md:py-24 flex flex-col items-center justify-center relative overflow-hidden">
-        <img 
-          src={imagenHero} 
-          alt="" 
-          className="absolute inset-0 w-full h-full object-cover opacity-25 scale-105" 
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/30" />
-        
+    <div className="animate-fadeIn font-sans">
+      {/* Sección Hero con buscador integrado y diseño institucional */}
+      <section 
+        className="relative w-full py-16 md:py-24 flex flex-col items-center justify-center bg-edu-primary" 
+        style={{ backgroundImage: `url(${imagenHero})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
+      >
+        <div className="absolute inset-0 bg-edu-dark/75 mix-blend-multiply"></div>
         <div className="relative z-10 text-center px-4 max-w-4xl mx-auto w-full flex flex-col items-center gap-6">
           <div className="space-y-2">
             <h1 className="text-4xl md:text-6xl font-bold text-white tracking-tight">Noticias y Novedades</h1>
@@ -380,6 +334,7 @@ export const NewsPage: React.FC = () => {
         </div>
       </section>
 
+      {/* Selector de Categorías Estilo Pestañas */}
       <section className="py-6 border-b border-slate-200/80 bg-white">
         <div className="max-w-7xl mx-auto px-4 flex flex-wrap gap-2 justify-center">
           {categories.map((category) => (
@@ -401,6 +356,7 @@ export const NewsPage: React.FC = () => {
         </div>
       </section>
 
+      {/* Grid de Noticias Catalogadas */}
       <section className="py-10">
         {filteredArticles.length === 0 ? (
           <div className="text-center py-20 text-slate-400 text-sm">
@@ -408,63 +364,101 @@ export const NewsPage: React.FC = () => {
           </div>
         ) : (
           <div className="space-y-12">
+            {/* Noticia Destacada Horizontal */}
             {featuredNews && (
-              <ScrollReveal durationMs={2000}>
-                <div className="max-w-7xl mx-auto px-4 py-6">
-                  <div className="mb-6 border-b border-slate-200 pb-3">
-                    <h2 className="text-2xl font-semibold text-edu-dark">Destacado</h2>
-                  </div>
-                  <div
-                    onClick={() => handleArticleClick(featuredNews.id)}
-                    className="group relative rounded-2xl overflow-hidden bg-white shadow-md hover:shadow-xl transition-all duration-500 cursor-pointer flex flex-col md:flex-row h-auto md:h-[420px] border border-slate-100"
-                  >
-                    <div className="w-full md:w-2/3 h-[280px] md:h-full relative overflow-hidden">
-                      <img
-                        src={featuredNews.image}
-                        alt={featuredNews.title}
-                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t md:bg-gradient-to-r from-slate-950/80 to-transparent"></div>
-                      <div className="absolute bottom-6 left-6 md:hidden">
-                        <span className="inline-block px-3 py-1 bg-edu-secondary/20 text-white text-xs font-bold uppercase tracking-wider rounded-full backdrop-blur-md border border-white/20 mb-3">
-                          {featuredNews.category}
-                        </span>
-                        <h3 className="text-xl font-bold text-white leading-tight">
-                          {featuredNews.title}
-                        </h3>
-                      </div>
-                    </div>
-
-                    <div className="w-full md:w-1/3 bg-white p-8 flex flex-col justify-center relative z-10 md:-ml-16 md:my-8 md:rounded-2xl md:shadow-2xl md:border border-slate-100 transition-transform duration-500 group-hover:-translate-y-1">
-                      <div className="hidden md:block mb-3">
-                        <span className="inline-block px-3 py-1 bg-edu-primary/10 text-edu-primary text-xs font-bold uppercase tracking-wider rounded-full">
-                          {featuredNews.category}
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-2 mb-3 text-slate-400 text-xs">
-                        <Calendar size={14} />
-                        <span>{featuredNews.date}</span>
-                      </div>
-                      <h3 className="hidden md:block text-2xl font-bold text-edu-dark mb-4 leading-tight group-hover:text-edu-secondary transition-colors duration-300">
+              <div className="max-w-7xl mx-auto px-4 py-6">
+                <div className="mb-6 border-b border-slate-200 pb-3">
+                  <h2 className="text-2xl font-semibold text-edu-dark">Destacado</h2>
+                </div>
+                <div
+                  onClick={() => handleArticleClick(featuredNews.id)}
+                  className="group relative rounded-2xl overflow-hidden bg-white shadow-md hover:shadow-xl transition-all duration-500 cursor-pointer flex flex-col md:flex-row h-auto md:h-[420px] border border-slate-100"
+                >
+                  <div className="w-full md:w-2/3 h-[280px] md:h-full relative overflow-hidden">
+                    <img
+                      src={featuredNews.image}
+                      alt={featuredNews.title}
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t md:bg-gradient-to-r from-slate-950/80 to-transparent"></div>
+                    <div className="absolute bottom-6 left-6 md:hidden">
+                      <span className="inline-block px-3 py-1 bg-edu-secondary/20 text-white text-xs font-bold uppercase tracking-wider rounded-full backdrop-blur-md border border-white/20 mb-3">
+                        {featuredNews.category}
+                      </span>
+                      <h3 className="text-xl font-bold text-white leading-tight">
                         {featuredNews.title}
                       </h3>
-                      <p className="text-sm text-slate-500 mb-6 line-clamp-3 leading-relaxed">
-                        {featuredNews.lead}
-                      </p>
-                      <button className="inline-flex items-center gap-2 text-xs font-bold uppercase text-white bg-edu-primary px-6 py-3.5 rounded-xl hover:bg-edu-secondary transition-colors self-start shadow-md">
-                        <span>Leer noticia</span>
-                        <ChevronRight size={14} />
-                      </button>
                     </div>
+                  </div>
+
+                  <div className="w-full md:w-1/3 bg-white p-8 flex flex-col justify-center relative z-10 md:-ml-16 md:my-8 md:rounded-2xl md:shadow-2xl md:border border-slate-100 transition-transform duration-500 group-hover:-translate-y-1">
+                    <div className="hidden md:block mb-3">
+                      <span className="inline-block px-3 py-1 bg-edu-primary/10 text-edu-primary text-xs font-bold uppercase tracking-wider rounded-full">
+                        {featuredNews.category}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2 mb-3 text-slate-400 text-xs">
+                      <Calendar size={14} />
+                      <span>{featuredNews.date}</span>
+                    </div>
+                    <h3 className="hidden md:block text-2xl font-bold text-edu-dark mb-4 leading-tight group-hover:text-edu-secondary transition-colors duration-300">
+                      {featuredNews.title}
+                    </h3>
+                    <p className="text-sm text-slate-500 mb-6 line-clamp-3 leading-relaxed">
+                      {featuredNews.lead}
+                    </p>
+                    <button className="inline-flex items-center gap-2 text-xs font-bold uppercase text-white bg-edu-primary px-6 py-3.5 rounded-xl hover:bg-edu-secondary transition-colors self-start shadow-md">
+                      <span>Leer noticia</span>
+                      <ChevronRight size={14} />
+                    </button>
                   </div>
                 </div>
               </ScrollReveal>
             )}
 
+            {/* Grilla de Noticias Regulares */}
             {regularNews.length > 0 && (
               <div className="max-w-7xl mx-auto px-4">
                 <div className="flex items-center justify-between mb-8 border-b border-slate-200 pb-3">
                   <h2 className="text-2xl font-semibold text-edu-dark">Últimas Noticias</h2>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                  {regularNews.map((article) => (
+                    <article
+                      key={article.id}
+                      onClick={() => handleArticleClick(article.id)}
+                      className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col border border-slate-100 cursor-pointer"
+                    >
+                      <div className="relative h-[220px] overflow-hidden">
+                        <img
+                          src={article.image}
+                          alt={article.title}
+                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        />
+                        <div className="absolute top-4 left-4">
+                          <span className="px-3 py-1 bg-white/90 text-edu-primary text-[10px] font-bold uppercase tracking-wider rounded-full shadow-sm backdrop-blur-sm">
+                            {article.category}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="p-6 flex flex-col flex-grow">
+                        <div className="flex items-center gap-2 mb-3 text-slate-400 text-xs">
+                          <Calendar size={12} />
+                          <span>{article.date}</span>
+                        </div>
+                        <h3 className="text-lg font-bold text-edu-dark mb-2 line-clamp-2 leading-tight group-hover:text-edu-secondary transition-colors duration-300">
+                          {article.title}
+                        </h3>
+                        <p className="text-xs text-slate-500 mb-4 line-clamp-2 flex-grow leading-relaxed">
+                          {article.lead}
+                        </p>
+                        <div className="inline-flex items-center gap-1 text-[11px] font-bold uppercase text-edu-primary group-hover:text-edu-secondary transition-colors mt-2">
+                          <span>Leer más</span>
+                          <ChevronRight size={12} />
+                        </div>
+                      </div>
+                    </article>
+                  ))}
                 </div>
                 
                 {/* CAMBIO AQUÍ: Un solo ScrollReveal envolviendo toda la grilla */}
@@ -511,6 +505,7 @@ export const NewsPage: React.FC = () => {
               </div>
             )}
 
+            {/* Paginación */}
             <div className="flex gap-2 justify-center pt-8">
               {[1, 2, 3].map((page) => (
                 <button
@@ -538,3 +533,4 @@ export const NewsPage: React.FC = () => {
     </div>
   );
 };
+

@@ -1,48 +1,74 @@
-# Project Name
+# Nombre del Proyecto
 
 <p align="center">
-  <img src="./docs/mer.png" alt="MER Diagram" width="700"/>
+  <img src="./docs/mer.png" alt="Diagrama MER" width="700"/>
 </p>
 
 <p align="center">
-  <i>Entity Relationship Model (MER)</i>
+  <i>Modelo Entidad Relación (MER)</i>
 </p>
 
 ---
 
-# Project Configuration
+# Configuración del Proyecto
 
-## 1. Clone the Repository
+## 1. Clonar el Repositorio
 
 ```bash
-git clone <repository-url>
-cd <project-directory>
+git clone <url-del-repositorio>
+cd <directorio-del-proyecto>
 ```
 
 ---
 
-## 2. Configure the Database
+## 2. Configurar Variables de Entorno
 
-Create a database for the project and update the connection settings in:
+Antes de ejecutar la aplicación, configurá las siguientes variables de entorno:
 
-- `src/main/resources/application.properties`
-- or `src/main/resources/application.yml`
+### Base de Datos
 
-### Example Configuration
+| Variable | Descripción | Ejemplo |
+|---|---|---|
+| `DB_URL` | URL de conexión JDBC | `jdbc:postgresql://localhost:5432/midb` |
+| `DB_USERNAME` | Usuario de la base de datos | `postgres` |
+| `DB_PASSWORD` | Contraseña de la base de datos | `secreto` |
+
+### JWT
+
+| Variable | Descripción | Ejemplo |
+|---|---|---|
+| `JWT_SECRET_KEY` | Clave secreta en Base64 (mínimo 256 bits) | `TmMsHG...` |
+| `JWT_TIME_EXPIRATION` | Expiración del token en milisegundos | `86400000` (24hs) |
+
+### Generar una clave secreta segura para JWT
+
+```bash
+openssl rand -base64 32
+```
+
+---
+
+## 3. Configurar la Aplicación
+
+Actualizá el archivo `src/main/resources/application.properties`:
 
 ```properties
-spring.datasource.url=jdbc:mysql://<host>:<port>/<database_name>
-spring.datasource.username=<db_username>
-spring.datasource.password=<db_password>
+# Base de datos
+spring.datasource.url=${DB_URL}
+spring.datasource.username=${DB_USERNAME}
+spring.datasource.password=${DB_PASSWORD}
 
 spring.jpa.hibernate.ddl-auto=update
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
+
+# JWT
+jwt.secret.key=${JWT_SECRET_KEY}
+jwt.time.expiration=${JWT_TIME_EXPIRATION}
 ```
 
 ---
 
-## 3. Install Dependencies
-
-Run the following command to download and install all project dependencies:
+## 4. Instalar Dependencias
 
 ```bash
 mvn clean install
@@ -50,21 +76,19 @@ mvn clean install
 
 ---
 
-## 4. Run the Application
-
-Start the application using Maven:
+## 5. Ejecutar la Aplicación
 
 ```bash
 mvn spring-boot:run
 ```
 
-Alternatively, you can run the main method from the `ApiTfiApplication` class directly from your IDE.
+También podés ejecutar el método main de la clase `ApiTfiApplication` directamente desde el IDE.
 
 ---
 
-# API Endpoints
+# Endpoints de la API
 
-## Base URL
+## URL Base
 
 ```text
 http://localhost:8080
@@ -72,9 +96,48 @@ http://localhost:8080
 
 ---
 
-## User Endpoints
+## Autenticación
 
-### Create User
+### Login
+
+**Endpoint**
+
+```http
+POST /auth/login
+```
+
+**Body**
+
+```json
+{
+  "email": "ejemplo@ejemplo.com",
+  "password": "contraseña123"
+}
+```
+
+**Respuesta**
+
+```json
+{
+  "token": "eyJhbGciOiJIUzI1NiJ9..."
+}
+```
+
+---
+
+### Requests Autenticados
+
+Incluí el token en el header `Authorization` para todos los endpoints protegidos:
+
+```http
+Authorization: Bearer <token>
+```
+
+---
+
+## Endpoints de Usuario
+
+### Crear Usuario
 
 **Endpoint**
 
@@ -82,20 +145,21 @@ http://localhost:8080
 POST /users
 ```
 
-### Request Body
+**Body**
 
 ```json
 {
-  "email": "example@example.com",
-  "firstName": "John",
-  "lastName": "Doe",
-  "password": "password123"
+  "email": "ejemplo@ejemplo.com",
+  "firstName": "Juan",
+  "lastName": "Pérez",
+  "password": "contraseña123",
+  "roles": ["ADMIN"]
 }
 ```
 
 ---
 
-### Get User by ID
+### Obtener Usuario por ID
 
 **Endpoint**
 
@@ -103,11 +167,15 @@ POST /users
 GET /users/{userId}
 ```
 
+**Headers**
+
+```http
+Authorization: Bearer <token>
+```
+
 ---
 
-# Testing
-
-Run the automated tests with:
+# Tests
 
 ```bash
 mvn test
@@ -115,24 +183,26 @@ mvn test
 
 ---
 
-# Deployment
+# Despliegue
 
-## Package the Application
+## Empaquetar la Aplicación
 
 ```bash
 mvn clean package
 ```
 
-## Run the Generated JAR
+## Ejecutar el JAR Generado
 
 ```bash
-java -jar target/<project-name>.jar
+java -jar target/<nombre-del-proyecto>.jar
 ```
 
 ---
 
-# Additional Notes
+# Notas Adicionales
 
-- Ensure the `application.properties` or `application.yml` file is properly configured for the target environment.
-- Avoid storing sensitive credentials directly in configuration files.
-- Use environment variables or a configuration server for production environments.
+- Nunca commitees `application.properties` con credenciales reales — usá variables de entorno.
+- Agregá `application.properties` al `.gitignore` si contiene datos sensibles, y proporcioná un `application.properties.example` como referencia.
+- La clave secreta JWT debe tener al menos 256 bits (32 bytes) al decodificarse desde Base64.
+- La expiración del token es en milisegundos: `86400000` = 24 horas, `3600000` = 1 hora.
+- Para entornos de producción usá un gestor de secretos (AWS Secrets Manager, HashiCorp Vault) en lugar de variables de entorno del sistema.

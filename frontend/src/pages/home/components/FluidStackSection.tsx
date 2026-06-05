@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 import lifeInicial from '../../../assets/service/life-inicial.png';
 import lifePrimario from '../../../assets/service/life-primario.png';

@@ -1,4 +1,4 @@
-package com.transformarparaeducar.api_tfi.domain.user.infrastructure;
+package com.transformarparaeducar.api_tfi.domain.user.infrastructure.persistence;
 
 import com.transformarparaeducar.api_tfi.domain.user.core.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;

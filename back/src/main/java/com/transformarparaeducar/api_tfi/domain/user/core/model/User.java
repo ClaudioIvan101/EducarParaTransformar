@@ -36,12 +36,18 @@ public class User {
     @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
     private Set<UserRole> roles;
 
-    public User(EmailAddress emailAddress, String firstName, String lastName, String password, Set<UserRole> roles) {
+    @Enumerated(EnumType.STRING)
+    @Column(name = "estado_solicitud", nullable = false, columnDefinition = "varchar(255) default 'PENDING'")
+    private UserRequestStatus userRequestStatus;
+
+    public User(EmailAddress emailAddress, String firstName, String lastName, String password,
+                Set<UserRole> roles) {
         this.emailAddress = emailAddress;
         this.firstName = firstName;
         this.lastName = lastName;
         this.password = password;
         this.roles = roles;
+        this.userRequestStatus = UserRequestStatus.PENDING;
     }
 
     public Long getIdentifierAsLong(){

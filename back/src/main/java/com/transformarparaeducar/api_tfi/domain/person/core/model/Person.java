@@ -1,18 +1,18 @@
 package com.transformarparaeducar.api_tfi.domain.person.core.model;
 
 import com.transformarparaeducar.api_tfi.domain.user.core.model.User;
+import com.transformarparaeducar.api_tfi.domain.user.core.model.UserRole;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 @Table(name = "persona")
-@AllArgsConstructor
 @NoArgsConstructor  // JPA lo necesita en la clase raíz también
 @Getter
 public abstract class Person {
@@ -34,7 +34,7 @@ public abstract class Person {
     private Long dni;
 
     @Column(name = "fecha_nacimiento", nullable = false)
-    private Date birthDate;
+    private LocalDate birthDate;
 
     @ElementCollection
     @CollectionTable(name = "persona_telefono",
@@ -46,4 +46,13 @@ public abstract class Person {
     @JoinColumn(name = "usuario_id")
     private User user;
 
+    public Person(String firstName, String lastName, String email, Long dni, LocalDate birthDate,
+                  List<String> phoneNumbers) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.dni = dni;
+        this.birthDate = birthDate;
+        this.phoneNumbers = phoneNumbers;
+    }
 }
