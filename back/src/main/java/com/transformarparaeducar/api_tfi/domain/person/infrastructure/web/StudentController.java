@@ -26,6 +26,7 @@ public class StudentController {
     }
 
     @GetMapping("/{personId}")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
     public ResponseEntity<GetStudentDTO> getStudentById(@PathVariable Long personId){
         GetStudentDTO getStudentDTO = getStudent.handle(personId);
         if (getStudentDTO == null) {
@@ -35,6 +36,7 @@ public class StudentController {
     }
 
     @PutMapping("/{personId}")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
     public ResponseEntity<String> updateStudent(@PathVariable Long personId, @RequestBody AddStudentDTO addStudentDTO){
         GetStudentDTO getStudentDTO = getStudent.handle(personId);
         if (getStudentDTO == null) {

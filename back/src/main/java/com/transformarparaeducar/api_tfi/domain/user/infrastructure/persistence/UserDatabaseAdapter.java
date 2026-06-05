@@ -36,4 +36,9 @@ public class UserDatabaseAdapter implements UserDatabase {
     public Optional<User> findByEmailAddress(String email) {
         return userRepository.findByEmailAddress(email);  // ← nombre actualizado
     }
+
+    @Override
+    public Optional<User> findUserById(UserIdentifier userId) {
+        return userRepository.findUserById(userId.getAsLong());
+    }
 }

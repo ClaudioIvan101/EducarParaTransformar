@@ -11,6 +11,7 @@ import com.transformarparaeducar.api_tfi.domain.person.core.ports.incoming.GetSt
 import com.transformarparaeducar.api_tfi.domain.person.core.ports.outgoing.PersonDatabase;
 import com.transformarparaeducar.api_tfi.domain.user.core.model.EmailAddress;
 import com.transformarparaeducar.api_tfi.domain.user.core.model.User;
+import com.transformarparaeducar.api_tfi.domain.user.core.model.UserRequestStatus;
 import com.transformarparaeducar.api_tfi.domain.user.core.model.UserRole;
 import com.transformarparaeducar.api_tfi.domain.user.core.ports.outgoing.UserDatabase;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -19,7 +20,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Set;
 
-public class StudentFacade implements AddNewStudent, GetStudent {
+public class PersonFacade implements AddNewStudent, GetStudent {
 
     private final PersonDatabase personDatabase;
 
@@ -27,7 +28,7 @@ public class StudentFacade implements AddNewStudent, GetStudent {
 
     private final PasswordEncoder passwordEncoder;
 
-    public StudentFacade(PersonDatabase personDatabase, PasswordEncoder passwordEncoder, UserDatabase userDatabase) {
+    public PersonFacade(PersonDatabase personDatabase, PasswordEncoder passwordEncoder, UserDatabase userDatabase) {
         this.personDatabase = personDatabase;
         this.passwordEncoder = passwordEncoder;
         this.userDatabase = userDatabase;
@@ -35,7 +36,6 @@ public class StudentFacade implements AddNewStudent, GetStudent {
 
     @Override
     public PersonIdentifier handle(AddStudentDTO addStudentDTO) {
-        System.out.println("ingresando al handle de student facade");
         Person student = new Student(
                 addStudentDTO.getFirstName().trim(),
                 addStudentDTO.getLastName().trim(),
@@ -47,14 +47,14 @@ public class StudentFacade implements AddNewStudent, GetStudent {
                 EducationalLevel.fromLevelName(addStudentDTO.getEducationalLevel().trim().toUpperCase()),
                 generateFileNumber(addStudentDTO)
         );
-        System.out.println("estudiante:"+student.toString());
         if (addStudentDTO.getPassword() != null && !addStudentDTO.getPassword().trim().isEmpty()) {
             User user = new User(
                     new EmailAddress(addStudentDTO.getEmail().trim()),
                     addStudentDTO.getFirstName().trim(),
                     addStudentDTO.getLastName().trim(),
                     passwordEncoder.encode(addStudentDTO.getPassword().trim()),
-                    Set.of(UserRole.STUDENT)
+                    Set.of(UserRole.STUDENT),
+                    UserRequestStatus.APPROVED
             );
             userDatabase.save(user);
         }

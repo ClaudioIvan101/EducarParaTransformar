@@ -32,4 +32,14 @@ public class PersonDatabaseAdapter implements PersonDatabase {
     public Optional<Person> findByEmailAddress(String email) {
         return Optional.empty();
     }
+
+    @Override
+    public Optional<Person> findByDni(Long dni) {
+        return personRepository.findByDni(dni);
+    }
+
+    @Override
+    public void saveAndFlush(Person person) {
+        personRepository.saveAndFlush(person);
+    }
 }

@@ -12,4 +12,8 @@ public interface PersonDatabase {
     GetStudentDTO findById(PersonIdentifier personId);
 
     Optional<Person> findByEmailAddress(String email);
+
+    Optional<Person> findByDni(Long dni);
+
+    void saveAndFlush(Person person);
 }
